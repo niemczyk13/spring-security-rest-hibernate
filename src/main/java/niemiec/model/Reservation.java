@@ -1,16 +1,15 @@
 package niemiec.model;
 
-import java.sql.Time;
+import java.time.LocalTime;
 import java.util.Date;
-import java.util.Set;
 
 public class Reservation {
 	private long id;
-	private Set<Table> tables;
+	private Table tables;
 	private int numberOfPeople;
 	private Date date;
-	private Time startHour;
-	private Time endHour;
+	private LocalTime startHour;
+	private LocalTime endHour;
 
 	private long getId() {
 		return id;
@@ -20,11 +19,11 @@ public class Reservation {
 		this.id = id;
 	}
 
-	public Set<Table> getTables() {
+	public Table getTable() {
 		return tables;
 	}
 
-	public void setTables(Set<Table> tables) {
+	public void setTable(Table tables) {
 		this.tables = tables;
 	}
 
@@ -44,24 +43,19 @@ public class Reservation {
 		this.date = date;
 	}
 
-	public Time getStartHour() {
+	public LocalTime getStartHour() {
 		return startHour;
 	}
 
-	public void setStartHour(Time startHour) {
+	public void setStartHour(LocalTime startHour) {
 		this.startHour = startHour;
 	}
 
-	public Time getEndHour() {
+	public LocalTime getEndHour() {
 		return endHour;
 	}
 
-	public void setEndHour(Time endHour) {
+	public void setEndHour(LocalTime endHour) {
 		this.endHour = endHour;
-	}
-
-	
-	public void addTable(Table table) {
-		tables.add(table);
 	}
 }

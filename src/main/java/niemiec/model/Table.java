@@ -8,11 +8,11 @@ public class Table {
 	private int numberOfSeats;
 	private List<Reservation> reservations;
 
-	private long getId() {
+	public long getId() {
 		return id;
 	}
 
-	private void setId(long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
