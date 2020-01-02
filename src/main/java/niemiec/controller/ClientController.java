@@ -1,6 +1,5 @@
 package niemiec.controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import niemiec.form.ReservationForm;
 
@@ -42,9 +40,9 @@ public class ClientController {
 	}
 
 	@PostMapping("/reservation/new")
-	public ResponseEntity<ReservationForm> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
+	public ResponseEntity<?> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			return new ResponseEntity<ReservationForm>(reservationForm, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<ReservationForm>(reservationForm, HttpStatus.OK);
 	}

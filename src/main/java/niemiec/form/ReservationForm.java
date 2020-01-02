@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -31,10 +32,14 @@ public class ReservationForm {
 	@Min(value = 1)
 	private int numberOfPeople;
 	@NotNull
+	@FutureOrPresent
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
 	@NotNull
+	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime startHour;
 	@NotNull
+	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime endHour;
 
 	public String getName() {
