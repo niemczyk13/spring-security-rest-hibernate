@@ -1,17 +1,20 @@
 package niemiec.model;
 
+import java.util.List;
+
 public class Client {
 	private long id;
 	private String name;
 	private String surname;
 	private String email;
 	private int phoneNumber;
+	private List<Reservation> reservations;
 
-	private long getId() {
+	public long getId() {
 		return id;
 	}
 
-	private void setId(long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -47,4 +50,15 @@ public class Client {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
+	}
+	
+	public void addReservation(Reservation reservation) {
+		reservations.add(reservation);
+	}
 }

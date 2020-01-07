@@ -1,7 +1,8 @@
-package niemiec.dao;
+package niemiec.dao.reservation;
 
 import java.util.List;
 
+import niemiec.dao.GenericDAO;
 import niemiec.model.Reservation;
 
 public interface ReservationDAO extends GenericDAO<Reservation> {

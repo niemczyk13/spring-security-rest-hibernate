@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 import niemiec.form.ReservationForm;
+import niemiec.service.reservation.ReservationService;
 
 @RestController
 public class ClientController {
@@ -33,17 +35,25 @@ public class ClientController {
 
 		aa.put("First", bb);
 		aa.put("Second", cc);
-		
+
 		Person p = new Person("Arek", 27);
 		aa.put("person", p);
 		return new ResponseEntity<Map<String, Object>>(aa, HttpStatus.OK);
 	}
+	
+	@Autowired
+	private ReservationService reservationService;
 
 	@PostMapping("/reservation/new")
 	public ResponseEntity<?> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
+		// sprawdzenie poprawności wpisanych danych
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
 		}
+
+		// sprawdzenie czy na daną datę i godzinę w danym stoliku istnieje rezerwacja
+		// jeżeli jest zajęte to szuka wolnego stolika z wystarczającą liczbą miejsc na daną godzinę
+		// podaje też wolne godziny +- 2h na chcianym i innych stolikach
 		return new ResponseEntity<ReservationForm>(reservationForm, HttpStatus.OK);
 	}
 
@@ -53,11 +63,9 @@ public class ClientController {
 			this.name = name;
 			this.age = age;
 		}
-		
+
 		public Person() {
 		}
-
-
 
 		String name;
 		int age;

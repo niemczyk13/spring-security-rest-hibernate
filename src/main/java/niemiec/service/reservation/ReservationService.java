@@ -1,4 +1,4 @@
-package niemiec.service;
+package niemiec.service.reservation;
 
 import java.util.List;
 

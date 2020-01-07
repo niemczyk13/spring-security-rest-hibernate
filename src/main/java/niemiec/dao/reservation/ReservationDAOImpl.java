@@ -1,4 +1,4 @@
-package niemiec.dao;
+package niemiec.dao.reservation;
 
 import java.util.List;
 
@@ -14,32 +14,28 @@ public class ReservationDAOImpl implements ReservationDAO {
 
 	@Override
 	public List<Reservation> list() {
-		// TODO Auto-generated method stub
-		return null;
+		return reservationRepository.findAll();
 	}
 
 	@Override
 	public Reservation get(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return reservationRepository.getOne(id);
 	}
 
 	@Override
 	public long save(Reservation reservation) {
-		// TODO Auto-generated method stub
-		return 0;
+		return reservationRepository.save(reservation).getId();
 	}
 
 	@Override
 	public void update(long id, Reservation reservation) {
-		// TODO Auto-generated method stub
-
+		reservation.setId(id);
+		reservationRepository.save(reservation);
 	}
 
 	@Override
 	public void delete(long id) {
-		// TODO Auto-generated method stub
-
+		reservationRepository.deleteById(id);
 	}
 
 }

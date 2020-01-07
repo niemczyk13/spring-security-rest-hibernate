@@ -6,18 +6,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import niemiec.model.Reservation;
+import niemiec.service.reservation.ReservationService;
+import niemiec.service.reservation.ReservationServiceImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ClientControllerTest {
 	ClientController clientController;
 	MockMvc clientControllerMock;
+	@Mock
+	ReservationServiceImpl reservationService;
+	Reservation reservation;
+	
+	
 	@Before
 	public void start() {
 		clientController = new ClientController();
 		clientControllerMock = MockMvcBuilders.standaloneSetup(clientController).build();
+		createReservation(reservation);
+	}
+
+	private void createReservation(Reservation r) {
+		r.setId(1L);
+		//rozwiązać problem wiązania klienta z rezerwacją
 	}
 
 	@Test
