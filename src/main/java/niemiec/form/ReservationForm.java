@@ -27,7 +27,7 @@ public class ReservationForm {
 	@Size(min = 9, max = 9)
 	private String phoneNumber;
 	@NotNull
-	private int tableId;
+	private int tableNumber;
 	@NotNull
 	@Min(value = 1)
 	private int numberOfPeople;
@@ -41,7 +41,7 @@ public class ReservationForm {
 	@NotNull
 	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime endHour;
-
+	
 	public String getName() {
 		return name;
 	}
@@ -74,12 +74,12 @@ public class ReservationForm {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public int getTableId() {
-		return tableId;
+	public int getTableNumber() {
+		return tableNumber;
 	}
 
-	public void setTableId(int tableId) {
-		this.tableId = tableId;
+	public void setTableNumber(int tableNumber) {
+		this.tableNumber = tableNumber;
 	}
 
 	public int getNumberOfPeople() {

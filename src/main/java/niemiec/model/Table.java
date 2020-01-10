@@ -1,12 +1,13 @@
 package niemiec.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Table {
+	//id is a tableNumber
 	private long id;
-	private int number;
 	private int numberOfSeats;
 	private List<Reservation> reservations;
 
@@ -20,14 +21,6 @@ public class Table {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
 	}
 
 	public int getNumberOfSeats() {
@@ -50,8 +43,20 @@ public class Table {
 		this.reservations.add(reservation);
 	}
 	
-	public void deleteReservation(long reservationId) {
-		this.reservations = this.reservations.stream()
+	public List<Reservation> getReservationsFromDate(LocalDate date) {
+		return reservations.stream()
+				.filter(r -> r.getDate().equals(date))
+				.collect(Collectors.toList());
+	}
+	
+	public void deleteReservationsToDate(LocalDate date) {
+		reservations = reservations.stream()
+				.filter(r -> r.getDate().compareTo(date) >= 0)
+				.collect(Collectors.toList());
+	}
+	
+	public void deleteOneReservation(long reservationId) {
+		reservations = reservations.stream()
 				.filter(r -> r.getId() != reservationId)
 				.collect(Collectors.toList());
 	}

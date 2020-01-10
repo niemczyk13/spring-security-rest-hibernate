@@ -47,13 +47,19 @@ public class ClientController {
 	@PostMapping("/reservation/new")
 	public ResponseEntity<?> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
 		// sprawdzenie poprawności wpisanych danych
+		// TODO - we własnej walidacji sprawdzić czy ID TABLE nie jest za duże
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
 		}
 
 		// sprawdzenie czy na daną datę i godzinę w danym stoliku istnieje rezerwacja
+		if (reservationService.checkIfThereIsAFreeDate(reservationForm)) {
+			return new ResponseEntity<ReservationForm>(reservationForm, HttpStatus.OK);
+		}
 		// jeżeli jest zajęte to szuka wolnego stolika z wystarczającą liczbą miejsc na daną godzinę
 		// podaje też wolne godziny +- 2h na chcianym i innych stolikach
+		
+		// po zarejestrowaniu wysłanie emaila z potwierdzeniem
 		return new ResponseEntity<ReservationForm>(reservationForm, HttpStatus.OK);
 	}
 
