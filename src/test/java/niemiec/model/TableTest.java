@@ -43,11 +43,11 @@ public class TableTest {
 
 	@Test
 	public void testGetReservationsFromDate() {
-		int arraySize = 2;
 		assertEquals(table.getReservations().get(2), reservations.get(2));
 		
 		LocalDate date = LocalDate.parse("2020-01-30", dateFormtter);
-		assertEquals(table.getReservationsFromDate(date).size(), arraySize);
+		assertEquals(table.getReservationsFromDate(date).get(0).getDate().compareTo(reservation1.getDate()), 0);
+		assertEquals(table.getReservationsFromDate(date).get(1).getDate().compareTo(reservation1.getDate()), 0);
 	}
 
 	@Test
