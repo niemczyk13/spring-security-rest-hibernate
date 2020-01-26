@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import niemiec.model.Table;
+import niemiec.model.RestaurantTable;
 
 public class ReservationForm {
 	@NotNull

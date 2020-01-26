@@ -3,10 +3,12 @@ package niemiec.dao.reservation;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import niemiec.model.Reservation;
 import niemiec.repository.ReservationRepository;
 
+@Component
 public class ReservationDAOImpl implements ReservationDAO {
 	
 	@Autowired
@@ -19,7 +21,7 @@ public class ReservationDAOImpl implements ReservationDAO {
 
 	@Override
 	public Reservation get(long id) {
-		return reservationRepository.getOne(id);
+		return reservationRepository.findById(id);
 	}
 
 	@Override

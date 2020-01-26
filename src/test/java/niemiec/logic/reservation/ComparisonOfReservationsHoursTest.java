@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import niemiec.form.ReservationForm;
 import niemiec.model.Reservation;
-import niemiec.model.Table;
+import niemiec.model.RestaurantTable;
 
 public class ComparisonOfReservationsHoursTest {
 	ComparisonOfReservationsHours comparisonOfReservationsHours;
@@ -69,7 +69,7 @@ public class ComparisonOfReservationsHoursTest {
 		return reservationForm;
 	}
 
-	private Reservation createReservation(Table t, long id, int numberOfPeople, String date, String startTime,
+	private Reservation createReservation(RestaurantTable t, long id, int numberOfPeople, String date, String startTime,
 			String endTime) {
 		
 		Reservation r = new Reservation();

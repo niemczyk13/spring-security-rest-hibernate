@@ -1,13 +1,13 @@
 package niemiec.model;
 
-import java.util.List;
+import javax.persistence.Embeddable;
 
+@Embeddable
 public class Client {
 	private String name;
 	private String surname;
 	private String email;
-	private int phoneNumber;
-	private List<Reservation> reservations;
+	private String phoneNumber;
 
 	public String getName() {
 		return name;
@@ -33,23 +33,11 @@ public class Client {
 		this.email = email;
 	}
 
-	public int getPhoneNumber() {
+	public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
-	public void setPhoneNumber(int phoneNumber) {
+	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-
-	public List<Reservation> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(List<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-	
-	public void addReservation(Reservation reservation) {
-		reservations.add(reservation);
 	}
 }

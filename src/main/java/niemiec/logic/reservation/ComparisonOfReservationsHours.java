@@ -3,12 +3,10 @@ package niemiec.logic.reservation;
 import java.time.LocalTime;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
 
 import niemiec.form.ReservationForm;
 import niemiec.model.Reservation;
 
-@Component
 public class ComparisonOfReservationsHours {
 	private static final int SMALLER = -1;
 	private static final int BIGGER = 1;
@@ -20,7 +18,7 @@ public class ComparisonOfReservationsHours {
 	private static final boolean NO_COLLISION = false;
 	private static final boolean COLLISION = true;
 
-	public boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
+	public static boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
 		LocalTime[] formHours = getHoursFromForm(reservationForm);
 		LocalTime[] reservationHours;
 		
@@ -33,7 +31,7 @@ public class ComparisonOfReservationsHours {
 		return THE_HOUR_IS_FREE;
 	}
 
-	private boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours, LocalTime[] reservationHours) {
+	private static boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours, LocalTime[] reservationHours) {
 		if (startHourFromFormIsAtTheEndOrAfterExistReservation(formHours[START_HOUR], reservationHours[END_HOUR])) {
 			return NO_COLLISION;
 		} else if (endHourFromFormIsAtTheStartOrBeforeExistReservation(formHours[END_HOUR], reservationHours[START_HOUR])) {
@@ -42,27 +40,27 @@ public class ComparisonOfReservationsHours {
 		return COLLISION;
 	}
 
-	private LocalTime[] getHourFromReservation(Reservation reservation) {
+	private static LocalTime[] getHourFromReservation(Reservation reservation) {
 		LocalTime[] reservationHours = new LocalTime[TABLE_SIZE_WITH_HOURS];
 		reservationHours[START_HOUR] = reservation.getStartHour();
 		reservationHours[END_HOUR] = reservation.getEndHour();
 		return reservationHours;
 	}
 
-	private LocalTime[] getHoursFromForm(ReservationForm reservationForm) {
+	private static LocalTime[] getHoursFromForm(ReservationForm reservationForm) {
 		LocalTime[] formHours = new LocalTime[TABLE_SIZE_WITH_HOURS];
 		formHours[START_HOUR] = reservationForm.getStartHour();
 		formHours[END_HOUR] = reservationForm.getEndHour();
 		return formHours;
 	}
 
-	private boolean startHourFromFormIsAtTheEndOrAfterExistReservation(LocalTime startHour,
+	private static boolean startHourFromFormIsAtTheEndOrAfterExistReservation(LocalTime startHour,
 			LocalTime endHour) {
-		return startHour.compareTo(endHour) == BIGGER || startHour.equals(endHour);
+		return startHour.equals(endHour) || startHour.compareTo(endHour) == BIGGER;
 	}
 
-	private boolean endHourFromFormIsAtTheStartOrBeforeExistReservation(LocalTime endHour,
+	private static boolean endHourFromFormIsAtTheStartOrBeforeExistReservation(LocalTime endHour,
 			LocalTime startHour) {
-		return endHour.compareTo(startHour) == SMALLER || endHour.equals(startHour);
+		return endHour.equals(startHour) || endHour.compareTo(startHour) == SMALLER;
 	}
 }

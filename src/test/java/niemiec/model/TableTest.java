@@ -13,7 +13,7 @@ import org.junit.Test;
 
 
 public class TableTest {
-	Table table;
+	RestaurantTable table;
 
 	Reservation reservation1;
 	Reservation reservation2;
@@ -67,7 +67,7 @@ public class TableTest {
 		assertEquals(table.getReservations().get(0), reservation2);
 	}
 
-	private Reservation createReservation(Table t, long id, int numberOfPeople, String date, String startTime,
+	private Reservation createReservation(RestaurantTable t, long id, int numberOfPeople, String date, String startTime,
 			String endTime) {
 		
 		Reservation r = new Reservation();
@@ -85,8 +85,8 @@ public class TableTest {
 		return r;
 	}
 
-	private Table createTable(int id, int numberOfSeats) {
-		Table t = new Table();
+	private RestaurantTable createTable(int id, int numberOfSeats) {
+		RestaurantTable t = new RestaurantTable();
 		t.setId(id);
 		t.setNumberOfSeats(numberOfSeats);
 		
