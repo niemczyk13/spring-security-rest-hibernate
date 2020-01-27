@@ -83,7 +83,7 @@ public class AdminController {
 
 	private void deleteReservationInRestaurantTable(Long id) {
 		Reservation reservation = reservationService.get(id);
-		RestaurantTable restaurantTable = reservation.getTable();
+		RestaurantTable restaurantTable = reservation.getRestaurantTable();
 		restaurantTable.deleteOneReservation(id);
 		restaurantTableService.update(restaurantTable.getId(), restaurantTable);
 	}

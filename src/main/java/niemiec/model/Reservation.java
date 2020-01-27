@@ -8,26 +8,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import niemiec.form.ReservationForm;
 
 @Entity
+@Table(name = "RESERVATION")
 public class Reservation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private Client client;
-	@OneToOne
-	@JsonBackReference
-//	@OnDelete(action = OnDeleteAction.CASCADE)
-	private RestaurantTable table;
+	@ManyToOne
+	private RestaurantTable restaurantTable;
 	private int numberOfPeople;
 	private LocalDate date;
 	private LocalTime startHour;
@@ -70,12 +64,12 @@ public class Reservation {
 		this.client = client;
 	}
 
-	public RestaurantTable getTable() {
-		return table;
+	public RestaurantTable getRestaurantTable() {
+		return restaurantTable;
 	}
 
-	public void setTable(RestaurantTable table) {
-		this.table = table;
+	public void setRestaurantTable(RestaurantTable resturantTable) {
+		this.restaurantTable = resturantTable;
 	}
 
 	public int getNumberOfPeople() {

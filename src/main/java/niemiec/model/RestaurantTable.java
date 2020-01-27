@@ -10,16 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDeleteAction;
-
-import org.hibernate.annotations.OnDelete;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@javax.persistence.Table(name = "RESTAURANT_TABLE")
+@Table(name = "RESTAURANT_TABLE")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class RestaurantTable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +25,6 @@ public class RestaurantTable {
 	private int tableNumber;
 	private int numberOfSeats;
 	@OneToMany
-	@JsonManagedReference
 	private List<Reservation> reservations;
 
 	public RestaurantTable() {

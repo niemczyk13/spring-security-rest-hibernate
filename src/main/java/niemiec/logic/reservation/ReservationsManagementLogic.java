@@ -38,7 +38,7 @@ public class ReservationsManagementLogic {
 		
 		if (ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm)) {
 			Reservation reservation = new Reservation(reservationForm);
-			reservation.setTable(table);
+			reservation.setRestaurantTable(table);
 			table.addReservation(reservation);
 			tableService.update(table.getId(), table);
 			reservationService.save(reservation);

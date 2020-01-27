@@ -75,7 +75,7 @@ public class TableTest {
 		timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		
 		r.setId(id);
-		r.setTable(t);
+		r.setRestaurantTable(t);
 		r.setNumberOfPeople(numberOfPeople);
 		r.setDate(LocalDate.parse(date, dateFormtter));
 		

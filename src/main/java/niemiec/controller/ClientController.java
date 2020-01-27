@@ -52,9 +52,8 @@ public class ClientController {
 		Reservation reservation = new Reservation(reservationForm);
 		
 		RestaurantTable restaurantTable = restaurantTableService.getByTableNumber(reservationForm.getTableNumber());
-		reservation.setTable(restaurantTable);
+		reservation.setRestaurantTable(restaurantTable);
 		restaurantTable.addReservation(reservation);
-		
 		reservationService.save(reservation);
 		restaurantTableService.update(restaurantTable.getId(), restaurantTable);
 		
