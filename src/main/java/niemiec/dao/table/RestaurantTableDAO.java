@@ -5,7 +5,7 @@ import java.util.List;
 import niemiec.dao.GenericDAO;
 import niemiec.model.RestaurantTable;
 
-public interface RestaurantTableDAO {
+public interface RestaurantTableDAO extends GenericDAO<RestaurantTable> {
 	List<RestaurantTable> list();
 	RestaurantTable get(long id);
 	long save(RestaurantTable table);

@@ -4,18 +4,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import niemiec.dao.GenericDAO;
+import niemiec.dao.reservation.ReservationDAO;
 import niemiec.model.Reservation;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-	private GenericDAO<Reservation> reservationDAO;
+	private ReservationDAO reservationDAO;
 	
 	public ReservationServiceImpl() {
 	}
 
 	@Autowired
-	public ReservationServiceImpl(GenericDAO<Reservation> reservationDAO) {
+	public ReservationServiceImpl(ReservationDAO reservationDAO) {
 		this.reservationDAO = reservationDAO;
 	}
 

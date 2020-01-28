@@ -17,13 +17,33 @@ public class ComparisonOfReservationsHours {
 	private static final boolean THE_HOUR_IS_FREE = true;
 	private static final boolean NO_COLLISION = false;
 	private static final boolean COLLISION = true;
+	
+	public static boolean checkIfTheGivenHoursAreInWorkingHours(LocalTime startHour, LocalTime endHour, LocalTime openHour, LocalTime closeHour) {
+		// TODO
+		LocalTime[] reservationHours = createTwoElementsTableWithLocalTime(startHour, endHour);
+		LocalTime[] openingHours = createTwoElementsTableWithLocalTime(openHour, closeHour);
+		if (restaurantClosesAfterMidnight(openingHours[END_HOUR])) {
+			// TODO
+		} else {
+			// TODO
+		}
+		return false;
+	}
+
+	
+
+	private static boolean restaurantClosesAfterMidnight(LocalTime hour) {
+		return hour.compareTo(LocalTime.MIDNIGHT) == BIGGER;
+	}
+
+
 
 	public static boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
 		LocalTime[] formHours = getHoursFromForm(reservationForm);
 		LocalTime[] reservationHours;
 		
 		for (Reservation reservation : reservations) {
-			reservationHours = getHourFromReservation(reservation);
+			reservationHours = getHoursFromReservation(reservation);
 			if (hoursFromFormCollideWithHoursFromReservation(formHours, reservationHours)) {
 				return THE_HOUR_IS_TAKEN;
 			}
@@ -40,18 +60,19 @@ public class ComparisonOfReservationsHours {
 		return COLLISION;
 	}
 
-	private static LocalTime[] getHourFromReservation(Reservation reservation) {
-		LocalTime[] reservationHours = new LocalTime[TABLE_SIZE_WITH_HOURS];
-		reservationHours[START_HOUR] = reservation.getStartHour();
-		reservationHours[END_HOUR] = reservation.getEndHour();
-		return reservationHours;
+	private static LocalTime[] getHoursFromReservation(Reservation reservation) {
+		return createTwoElementsTableWithLocalTime(reservation.getStartHour(), reservation.getEndHour());
 	}
 
 	private static LocalTime[] getHoursFromForm(ReservationForm reservationForm) {
-		LocalTime[] formHours = new LocalTime[TABLE_SIZE_WITH_HOURS];
-		formHours[START_HOUR] = reservationForm.getStartHour();
-		formHours[END_HOUR] = reservationForm.getEndHour();
-		return formHours;
+		return createTwoElementsTableWithLocalTime(reservationForm.getStartHour(), reservationForm.getEndHour());
+	}
+	
+	private static LocalTime[] createTwoElementsTableWithLocalTime(LocalTime startHour, LocalTime endHour) {
+		LocalTime[] reservationHours = new LocalTime[TABLE_SIZE_WITH_HOURS];
+		reservationHours[START_HOUR] = startHour;
+		reservationHours[END_HOUR] = endHour;
+		return reservationHours;
 	}
 
 	private static boolean startHourFromFormIsAtTheEndOrAfterExistReservation(LocalTime startHour,
