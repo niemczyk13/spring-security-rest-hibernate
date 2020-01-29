@@ -2,6 +2,7 @@ package niemiec.logic.reservation;
 
 import static org.junit.Assert.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -14,10 +15,9 @@ import org.junit.Test;
 import niemiec.form.ReservationForm;
 import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
+import niemiec.restaurant.RestaurantInformation;
 
 public class ComparisonOfReservationsHoursTest {
-	ComparisonOfReservationsHours comparisonOfReservationsHours;
-	
 	Reservation reservation1;
 	Reservation reservation2;
 	Reservation reservation3;
@@ -29,7 +29,8 @@ public class ComparisonOfReservationsHoursTest {
 	
 	@Before
 	public void init() {
-		comparisonOfReservationsHours = new ComparisonOfReservationsHours();
+		dateFormtter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		
 		reservation1 = createReservation(null, 1, 2, "2020-01-30", "14:00", "15:00");
 		reservation2 = createReservation(null, 2, 2, "2020-01-30", "17:00", "18:30");
@@ -46,26 +47,101 @@ public class ComparisonOfReservationsHoursTest {
 	@Test
 	public void testCheckIfItIsFreeTime() {
 		ReservationForm reservationForm = createReservationFormWithStartAndEndHours("13:00", "15:00");
-		assertEquals(comparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), false);
+		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), false);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("15:00", "16:00");
-		assertEquals(comparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
+		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("15:00", "17:00");
-		assertEquals(comparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
+		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("19:15", "19:20");
-		assertEquals(comparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
+		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("20:30", "22:00");
-		assertEquals(comparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), false);
+		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), false);
+		
+	}
+	
+	@Test
+	public void testCheckIfTheGivenHoursAreInWorkingHours() {
+		LocalTime openHour = createLocalTime("14:00");
+		LocalTime closeHour = createLocalTime("00:00");
+		
+		LocalTime startHour = createLocalTime("14:00");
+		LocalTime endHour = createLocalTime("15:00");
+		
+		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), true);
+		
+		
+		openHour = createLocalTime("14:00");
+		closeHour = createLocalTime("00:00");
+		startHour = createLocalTime("13:59");
+		endHour = createLocalTime("15:00");
+		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), false);
+		
+		openHour = createLocalTime("14:00");
+		closeHour = createLocalTime("00:00");
+		startHour = createLocalTime("14:00");
+		endHour = createLocalTime("00:01");
+		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), false);
+		
+		openHour = createLocalTime("14:00");
+		closeHour = createLocalTime("01:00");
+		startHour = createLocalTime("14:00");
+		endHour = createLocalTime("15:00");
+		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), true);
+		
+		openHour = createLocalTime("14:00");
+		closeHour = createLocalTime("01:00");
+		startHour = createLocalTime("14:00");
+		endHour = createLocalTime("01:01");
+		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), false);
+	
+
+		closeHour = createLocalTime("01:00");
+		startHour = createLocalTime("23:00");
+		
+	}
+	
+	@Test
+	public void testCheckIfReservationTheRightTimeBeforeClosing() {
+		long min = RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
+		LocalTime openHour = createLocalTime("14:00");
+		LocalTime closeHour = createLocalTime("23:00");
+		LocalTime startHour = createLocalTime("21:00");
+		
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
+		
+		startHour = createLocalTime("00:00");
+		closeHour = createLocalTime("01:00");
+		
+		Duration duration = Duration.between(startHour, closeHour);
+		Duration d2 = Duration.ofSeconds(RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING);
+		Duration duration2 = Duration.between(startHour, LocalTime.MIDNIGHT);
+		Duration duration3 = Duration.between(closeHour, LocalTime.MIDNIGHT);
+		
+		System.out.println(duration);
+		System.out.println(d2);
+		System.out.println(duration.compareTo(d2));
+		System.out.println(duration2);
+		System.out.println(duration3);
+	}
+	
+	private boolean checkBeforeClosing(LocalTime startHour, LocalTime openHour,
+			LocalTime closeHour, long minReservationTimeBeforeClosing) {
+		return ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, openHour, closeHour, minReservationTimeBeforeClosing);
+	}
+	
+	private boolean checkBetweenWorkingHours(LocalTime startHour, LocalTime endHour,
+			LocalTime openHour, LocalTime closeHour) {
+		return ComparisonOfReservationsHours.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour, closeHour);
 	}
 	
 	private ReservationForm createReservationFormWithStartAndEndHours(String startHour, String endHour) {
 		ReservationForm reservationForm = new ReservationForm();
-		timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-		reservationForm.setStartHour(LocalTime.parse(startHour, timeFormatter));
-		reservationForm.setEndHour(LocalTime.parse(endHour, timeFormatter));
+		reservationForm.setStartHour(createLocalTime(startHour));
+		reservationForm.setEndHour(createLocalTime(endHour));
 		return reservationForm;
 	}
 
@@ -73,18 +149,24 @@ public class ComparisonOfReservationsHoursTest {
 			String endTime) {
 		
 		Reservation r = new Reservation();
-		dateFormtter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		
 		r.setId(id);
 		r.setRestaurantTable(t);
 		r.setNumberOfPeople(numberOfPeople);
-		r.setDate(LocalDate.parse(date, dateFormtter));
+		r.setDate(createLocalDate(date));
 		
-		r.setStartHour(LocalTime.parse(startTime, timeFormatter));
-		r.setEndHour(LocalTime.parse(endTime, timeFormatter));
+		r.setStartHour(createLocalTime(startTime));
+		r.setEndHour(createLocalTime(endTime));
 		
 		return r;
+	}
+	
+	private LocalTime createLocalTime(String hour) {
+		return LocalTime.parse(hour, timeFormatter);
+	}
+	
+	private LocalDate createLocalDate(String date) {
+		return LocalDate.parse(date, dateFormtter);
 	}
 
 }
