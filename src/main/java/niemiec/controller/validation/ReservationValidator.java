@@ -13,8 +13,10 @@ import niemiec.model.RestaurantTable;
 import niemiec.restaurant.RestaurantInformation;
 import niemiec.service.restaurantTable.RestaurantTableService;
 
+
 @Component
 public class ReservationValidator implements Validator {
+	private final int SECONDS_IN_MINUTE = 60;
 	private RestaurantTableService restaurantTableService;
 	
 	
@@ -51,7 +53,7 @@ public class ReservationValidator implements Validator {
 		
 		// jeżeli godzina przyjścia nie jest minimum 60 minut przed zamknięciem
 		checkIfReservationTheRightTimeBeforeClosing(form, errors);
-		//czy rezerwacja to minimum 30 minut
+		//TODO czy rezerwacja to minimum 30 minut
 		
 		
 	}
@@ -63,9 +65,11 @@ public class ReservationValidator implements Validator {
 		LocalTime openHour = RestaurantInformation.OPEN_HOUR;
 		LocalTime closeHour = RestaurantInformation.CLOSE_HOUR;
 		long timeBeforeClosing = RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
-		
+
 		if (!ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, openHour, closeHour, timeBeforeClosing)) {
-			// TODO
+			timeBeforeClosing = timeBeforeClosing / SECONDS_IN_MINUTE;
+			String message = "The rezervation minimum " + timeBeforeClosing + " minutes before closing restauration";
+			errors.rejectValue("startHour", message, message);
 		}
 	}
 
@@ -74,6 +78,7 @@ public class ReservationValidator implements Validator {
 		LocalTime endHour = form.getEndHour();
 		LocalTime openHour = RestaurantInformation.OPEN_HOUR;
 		LocalTime closeHour = RestaurantInformation.CLOSE_HOUR;
+		
 		if (!ComparisonOfReservationsHours.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour, closeHour)) {
 			String message = "The restaurant is open from " + openHour + " to " + closeHour;
 			errors.rejectValue("startHour", message, message);

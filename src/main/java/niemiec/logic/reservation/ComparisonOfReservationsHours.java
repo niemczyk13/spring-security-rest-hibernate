@@ -17,6 +17,7 @@ public class ComparisonOfReservationsHours {
 	private static final boolean THE_HOUR_IS_FREE = true;
 	private static final boolean NO_COLLISION = false;
 	private static final boolean COLLISION = true;
+	private static final long ONE_DAY_IN_SECONDS = 86_400L;
 
 	public static boolean checkIfReservationTheRightTimeBeforeClosing(LocalTime startHour, LocalTime openHour,
 			LocalTime closeHour, long minReservationTimeBeforeClosing) {
@@ -36,7 +37,7 @@ public class ComparisonOfReservationsHours {
 	private static boolean startHourBeforeMidnightIsGood(LocalTime startHour, LocalTime closeHour,
 			Duration timeBeforeClosing, Duration hoursDifference) {
 		Duration startAndMidnightDifference = Duration.between(startHour, LocalTime.MIDNIGHT);
-		Duration oneDay = Duration.ofSeconds(86_400L);
+		Duration oneDay = Duration.ofSeconds(ONE_DAY_IN_SECONDS);
 		startAndMidnightDifference = startAndMidnightDifference.plus(oneDay);
 
 		Duration closeAndMidnightDifference = Duration.between(LocalTime.MIDNIGHT, closeHour);

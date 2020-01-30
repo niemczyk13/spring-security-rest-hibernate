@@ -2,7 +2,6 @@ package niemiec.logic.reservation;
 
 import static org.junit.Assert.*;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
