@@ -20,48 +20,72 @@ public class ComparisonOfReservationsHours {
 
 	public static boolean checkIfReservationTheRightTimeBeforeClosing(LocalTime startHour, LocalTime openHour,
 			LocalTime closeHour, long minReservationTimeBeforeClosing) {
-		// TODO Auto-generated method stub
 		Duration timeBeforeClosing = Duration.ofSeconds(minReservationTimeBeforeClosing);
 		Duration hoursDifference = Duration.between(startHour, closeHour);
-		
-		if (closingHourIsAtOrAfterMidnight(openHour, closeHour)) {
-			return false;
-		} else {
-//			System.out.println(closeHour.compareTo(LocalTime.MIDNIGHT));
-			return hoursDifference.equals(timeBeforeClosing) || hoursDifference.compareTo(timeBeforeClosing) == BIGGER;
+
+		if (startHourIsBeforeMidnightAndCloseHoursIsAfterOrOnMidnight(startHour, openHour, closeHour)) {
+			return startHourBeforeMidnightIsGood(startHour, closeHour, timeBeforeClosing, hoursDifference);
 		}
+		return otherStartHoursIsGood(timeBeforeClosing, hoursDifference);
 	}
-	
-	private static boolean closingHourIsAtOrAfterMidnight(LocalTime openHour, LocalTime closeHour) {
-		boolean closingBeforeOpeningAndAfterMidnight = openHour.compareTo(closeHour) == BIGGER;
-		return closingBeforeOpeningAndAfterMidnight;
+
+	private static boolean otherStartHoursIsGood(Duration timeBeforeClosing, Duration hoursDifference) {
+		return hourIsEqualsOrSmaller(timeBeforeClosing, hoursDifference);
+	}
+
+	private static boolean startHourBeforeMidnightIsGood(LocalTime startHour, LocalTime closeHour,
+			Duration timeBeforeClosing, Duration hoursDifference) {
+		Duration startAndMidnightDifference = Duration.between(startHour, LocalTime.MIDNIGHT);
+		Duration oneDay = Duration.ofSeconds(86_400L);
+		startAndMidnightDifference = startAndMidnightDifference.plus(oneDay);
+
+		Duration closeAndMidnightDifference = Duration.between(LocalTime.MIDNIGHT, closeHour);
+
+		Duration difference = startAndMidnightDifference.plus(closeAndMidnightDifference);
+
+		return hourIsEqualsOrSmaller(timeBeforeClosing, difference);
+	}
+
+	private static boolean hourIsEqualsOrSmaller(Duration first, Duration second) {
+		return first.equals(second) || first.compareTo(second) == SMALLER;
+	}
+
+	private static boolean startHourIsBeforeMidnightAndCloseHoursIsAfterOrOnMidnight(LocalTime startHour,
+			LocalTime openHour, LocalTime closeHour) {
+		boolean closeHourIsAfterOrOnMidnight = theHourIsBeetweenOrEquals(closeHour, LocalTime.MIDNIGHT, openHour);
+		boolean startHourIsBeforeMidnight = ifStartHourIsBeforeMidnightMustBeBiggerFromCloseHour(startHour, closeHour);
+
+		return closeHourIsAfterOrOnMidnight && startHourIsBeforeMidnight;
+	}
+
+	private static boolean ifStartHourIsBeforeMidnightMustBeBiggerFromCloseHour(LocalTime startHour,
+			LocalTime closeHour) {
+		return startHour.compareTo(closeHour) == BIGGER;
 	}
 
 	public static boolean checkIfTheGivenHoursAreInWorkingHours(LocalTime startHour, LocalTime endHour,
 			LocalTime openHour, LocalTime closeHour) {
-		LocalTime[] reservationHours = createTwoElementsTableWithLocalTime(startHour, endHour);
-		LocalTime[] openingHours = createTwoElementsTableWithLocalTime(openHour, closeHour);
+		boolean startHourIsBetween = theHourIsBeetweenOrEquals(startHour, openHour, closeHour);
+		boolean endHourIsBetween = theHourIsBeetweenOrEquals(endHour, openHour, closeHour);
 
-		if (theReservationHoursIsBetweenTheOpeningAndClosingHours(reservationHours, openingHours)) {
-			return true;
-		}
-		return false;
+		return startHourIsBetween && endHourIsBetween;
 	}
 
-	private static boolean theReservationHoursIsBetweenTheOpeningAndClosingHours(LocalTime[] reservationHours,
-			LocalTime[] openingHours) {
-		if (theHourIsBetweenTheOpeningAndClosingHours(reservationHours[START_HOUR], openingHours)
-				&& theHourIsBetweenTheOpeningAndClosingHours(reservationHours[END_HOUR], openingHours)) {
-			return true;
+	private static boolean theHourIsBeetweenOrEquals(LocalTime hour, LocalTime firstLimit, LocalTime secondLimit) {
+		boolean firstEquals = hour.equals(firstLimit);
+		boolean secondEquals = hour.equals(secondLimit);
+
+		boolean firstComapreTo = hour.compareTo(firstLimit) == BIGGER;
+		boolean seconCompareTo = hour.compareTo(secondLimit) == SMALLER;
+
+		if (closeHourIsAfterMidnight(firstLimit, secondLimit)) {
+			return (firstEquals || secondEquals) || firstComapreTo;
 		}
-		return false;
+		return (firstEquals || secondEquals) || (firstComapreTo && seconCompareTo);
 	}
 
-	private static boolean theHourIsBetweenTheOpeningAndClosingHours(LocalTime hour, LocalTime[] openingHours) {
-		
-		boolean hourIsEqualsOrAfterOpenHour = hour.equals(openingHours[START_HOUR]) || hour.compareTo(openingHours[START_HOUR]) == BIGGER;
-		boolean hourIsEqualsOrBeforeCloseHour = hour.equals(openingHours[END_HOUR]) || hour.compareTo(openingHours[END_HOUR]) == SMALLER;
-		return hourIsEqualsOrAfterOpenHour || hourIsEqualsOrBeforeCloseHour;
+	private static boolean closeHourIsAfterMidnight(LocalTime firstLimit, LocalTime secondLimit) {
+		return secondLimit.compareTo(firstLimit) == SMALLER;
 	}
 
 	public static boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
@@ -111,5 +135,4 @@ public class ComparisonOfReservationsHours {
 		return endHour.equals(startHour) || endHour.compareTo(startHour) == SMALLER;
 	}
 
-	
 }

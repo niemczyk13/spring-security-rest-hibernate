@@ -108,24 +108,56 @@ public class ComparisonOfReservationsHoursTest {
 	public void testCheckIfReservationTheRightTimeBeforeClosing() {
 		long min = RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
 		LocalTime openHour = createLocalTime("14:00");
-		LocalTime closeHour = createLocalTime("23:00");
-		LocalTime startHour = createLocalTime("21:00");
+		LocalTime closeHour;
+		LocalTime startHour;
 		
+		startHour = createLocalTime("23:00");
+		closeHour = createLocalTime("01:00");
 		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
 		
 		startHour = createLocalTime("00:00");
 		closeHour = createLocalTime("01:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
 		
-		Duration duration = Duration.between(startHour, closeHour);
-		Duration d2 = Duration.ofSeconds(RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING);
-		Duration duration2 = Duration.between(startHour, LocalTime.MIDNIGHT);
-		Duration duration3 = Duration.between(closeHour, LocalTime.MIDNIGHT);
+		startHour = createLocalTime("00:01");
+		closeHour = createLocalTime("01:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), false);
+
+		startHour = createLocalTime("23:59");
+		closeHour = createLocalTime("01:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
+
+		startHour = createLocalTime("23:45");
+		closeHour = createLocalTime("00:30");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), false);
+
+		startHour = createLocalTime("23:30");
+		closeHour = createLocalTime("00:30");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
 		
-		System.out.println(duration);
-		System.out.println(d2);
-		System.out.println(duration.compareTo(d2));
-		System.out.println(duration2);
-		System.out.println(duration3);
+		startHour = createLocalTime("23:31");
+		closeHour = createLocalTime("00:30");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), false);
+		
+		startHour = createLocalTime("23:30");
+		closeHour = createLocalTime("00:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), false);
+		
+		startHour = createLocalTime("23:00");
+		closeHour = createLocalTime("00:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
+		
+		startHour = createLocalTime("23:01");
+		closeHour = createLocalTime("00:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), false);
+		
+		startHour = createLocalTime("22:51");
+		closeHour = createLocalTime("23:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), false);
+		
+		startHour = createLocalTime("19:51");
+		closeHour = createLocalTime("23:00");
+		assertEquals(checkBeforeClosing(startHour, openHour, closeHour, min), true);
 	}
 	
 	private boolean checkBeforeClosing(LocalTime startHour, LocalTime openHour,
