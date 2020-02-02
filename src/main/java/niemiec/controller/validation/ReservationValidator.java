@@ -40,12 +40,15 @@ public class ReservationValidator implements Validator {
 		// czy dany stolik istnieje
 		RestaurantTable restaurantTable;
 		restaurantTable = getRestaurantTableFromDataBase(form.getTableNumber());
-		if (checkIfRestaurantTableExist(restaurantTable, errors)) {
+		if (restaurantTableExist(restaurantTable)) {
 			// czy ilość miejsc w stoliku jest większa lub równa liście gości
 			
 			// czy podany termin jest wolny
 			// jeżeli nie jest to informacja jak pod formularzem i propozycje innego stolika
 			// lub innych godzin
+		} else {
+			String message = "Table does not exist";
+			errors.rejectValue("tableNumber", message, message);
 		}
 		
 		// czy podane godziny w godzinach pracy
@@ -54,21 +57,34 @@ public class ReservationValidator implements Validator {
 		// jeżeli godzina przyjścia nie jest minimum 60 minut przed zamknięciem
 		checkIfReservationTheRightTimeBeforeClosing(form, errors);
 		//TODO czy rezerwacja to minimum 30 minut
+		checkIfReservationLastsAMinimumTime(form, errors);
 		
 		
 	}
 
 	
 
+	private void checkIfReservationLastsAMinimumTime(ReservationForm form, Errors errors) {
+		LocalTime startHour = form.getStartHour();
+		LocalTime endHour = form.getEndHour();
+		long minimumReservationTime = RestaurantInformation.MINIMUM_RESERVATION_TIME;
+		
+		if (!ComparisonOfReservationsHours.checkIfReservationLastsAMinimumTime(startHour, endHour, minimumReservationTime)) {
+			minimumReservationTime = minimumReservationTime / SECONDS_IN_MINUTE;
+			String message = "The minimum rezervation time is " + minimumReservationTime;
+			errors.rejectValue("startHour", message, message);
+		}
+		
+	}
+
 	private void checkIfReservationTheRightTimeBeforeClosing(ReservationForm form, Errors errors) {
 		LocalTime startHour = form.getStartHour();
-		LocalTime openHour = RestaurantInformation.OPEN_HOUR;
 		LocalTime closeHour = RestaurantInformation.CLOSE_HOUR;
 		long timeBeforeClosing = RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
 
-		if (!ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, openHour, closeHour, timeBeforeClosing)) {
+		if (!ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour, timeBeforeClosing)) {
 			timeBeforeClosing = timeBeforeClosing / SECONDS_IN_MINUTE;
-			String message = "The rezervation minimum " + timeBeforeClosing + " minutes before closing restauration";
+			String message = "The reservation minimum " + timeBeforeClosing + " minutes before closing restauration";
 			errors.rejectValue("startHour", message, message);
 		}
 	}
@@ -90,13 +106,8 @@ public class ReservationValidator implements Validator {
 	}
 	
 
-	private boolean checkIfRestaurantTableExist(RestaurantTable restaurantTable, Errors errors) {
-		if (restaurantTable == null) {
-			String message = "Table does not exist";
-			errors.rejectValue("tableNumber", message, message);
-			return false;
-		}
-		return true;
+	private boolean restaurantTableExist(RestaurantTable restaurantTable) {
+		return restaurantTable != null;
 	}
 
 }

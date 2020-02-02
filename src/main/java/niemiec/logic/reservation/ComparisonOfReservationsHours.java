@@ -19,57 +19,65 @@ public class ComparisonOfReservationsHours {
 	private static final boolean COLLISION = true;
 	private static final long ONE_DAY_IN_SECONDS = 86_400L;
 
-	public static boolean checkIfReservationTheRightTimeBeforeClosing(LocalTime startHour, LocalTime openHour,
+	public static boolean checkIfReservationLastsAMinimumTime(LocalTime startHour, LocalTime endHour,
+			long minimumReservationTime) {
+		return betweenTheHoursIsEqualsOrGreaterTimeDifference(startHour, endHour, minimumReservationTime);
+	}
+
+	public static boolean checkIfReservationTheRightTimeBeforeClosing(LocalTime startHour,
 			LocalTime closeHour, long minReservationTimeBeforeClosing) {
-		Duration timeBeforeClosing = Duration.ofSeconds(minReservationTimeBeforeClosing);
-		Duration hoursDifference = Duration.between(startHour, closeHour);
-
-		if (startHourIsBeforeMidnightAndCloseHoursIsAfterOrOnMidnight(startHour, openHour, closeHour)) {
-			return startHourBeforeMidnightIsGood(startHour, closeHour, timeBeforeClosing, hoursDifference);
+		return betweenTheHoursIsEqualsOrGreaterTimeDifference(startHour, closeHour, minReservationTimeBeforeClosing);
+	}
+	
+	private static boolean betweenTheHoursIsEqualsOrGreaterTimeDifference(LocalTime startHour, LocalTime endHour, long minimumTime) {
+		Duration difference;
+		Duration minTime = Duration.ofSeconds(minimumTime);
+		
+		if (hoursAreOnTheBorderOfDays(startHour, endHour)) {
+			difference = calculateTheTimeDifferenceBetweenDays(startHour, endHour);
+		} else {
+			difference = Duration.between(startHour, endHour);
 		}
-		return otherStartHoursIsGood(timeBeforeClosing, hoursDifference);
-	}
-
-	private static boolean otherStartHoursIsGood(Duration timeBeforeClosing, Duration hoursDifference) {
-		return hourIsEqualsOrSmaller(timeBeforeClosing, hoursDifference);
-	}
-
-	private static boolean startHourBeforeMidnightIsGood(LocalTime startHour, LocalTime closeHour,
-			Duration timeBeforeClosing, Duration hoursDifference) {
-		Duration startAndMidnightDifference = Duration.between(startHour, LocalTime.MIDNIGHT);
-		Duration oneDay = Duration.ofSeconds(ONE_DAY_IN_SECONDS);
-		startAndMidnightDifference = startAndMidnightDifference.plus(oneDay);
-
-		Duration closeAndMidnightDifference = Duration.between(LocalTime.MIDNIGHT, closeHour);
-
-		Duration difference = startAndMidnightDifference.plus(closeAndMidnightDifference);
-
-		return hourIsEqualsOrSmaller(timeBeforeClosing, difference);
-	}
-
-	private static boolean hourIsEqualsOrSmaller(Duration first, Duration second) {
-		return first.equals(second) || first.compareTo(second) == SMALLER;
-	}
-
-	private static boolean startHourIsBeforeMidnightAndCloseHoursIsAfterOrOnMidnight(LocalTime startHour,
-			LocalTime openHour, LocalTime closeHour) {
-		boolean closeHourIsAfterOrOnMidnight = theHourIsBeetweenOrEquals(closeHour, LocalTime.MIDNIGHT, openHour);
-		boolean startHourIsBeforeMidnight = ifStartHourIsBeforeMidnightMustBeBiggerFromCloseHour(startHour, closeHour);
-
-		return closeHourIsAfterOrOnMidnight && startHourIsBeforeMidnight;
-	}
-
-	private static boolean ifStartHourIsBeforeMidnightMustBeBiggerFromCloseHour(LocalTime startHour,
-			LocalTime closeHour) {
-		return startHour.compareTo(closeHour) == BIGGER;
+		return timeIsEqualsOrSmaller(minTime, difference);
 	}
 
 	public static boolean checkIfTheGivenHoursAreInWorkingHours(LocalTime startHour, LocalTime endHour,
 			LocalTime openHour, LocalTime closeHour) {
 		boolean startHourIsBetween = theHourIsBeetweenOrEquals(startHour, openHour, closeHour);
 		boolean endHourIsBetween = theHourIsBeetweenOrEquals(endHour, openHour, closeHour);
-
+	
 		return startHourIsBetween && endHourIsBetween;
+	}
+
+	public static boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
+		LocalTime[] formHours = getHoursFromForm(reservationForm);
+		LocalTime[] reservationHours;
+	
+		for (Reservation reservation : reservations) {
+			reservationHours = getHoursFromReservation(reservation);
+			if (hoursFromFormCollideWithHoursFromReservation(formHours, reservationHours)) {
+				return THE_HOUR_IS_TAKEN;
+			}
+		}
+		return THE_HOUR_IS_FREE;
+	}
+
+	private static boolean hoursAreOnTheBorderOfDays(LocalTime startHour, LocalTime endHour) {
+		return startHour.compareTo(endHour) == BIGGER;
+	}
+
+	private static Duration calculateTheTimeDifferenceBetweenDays(LocalTime startHour, LocalTime endHour) {
+		Duration first = Duration.between(startHour, LocalTime.MIDNIGHT);
+		Duration oneDay = Duration.ofSeconds(ONE_DAY_IN_SECONDS);
+		first = first.plus(oneDay);
+		
+		Duration second = Duration.between(LocalTime.MIDNIGHT, endHour);
+		
+		return first.plus(second);
+	}
+
+	private static boolean timeIsEqualsOrSmaller(Duration first, Duration second) {
+		return first.equals(second) || first.compareTo(second) == SMALLER;
 	}
 
 	private static boolean theHourIsBeetweenOrEquals(LocalTime hour, LocalTime firstLimit, LocalTime secondLimit) {
@@ -79,27 +87,10 @@ public class ComparisonOfReservationsHours {
 		boolean firstComapreTo = hour.compareTo(firstLimit) == BIGGER;
 		boolean seconCompareTo = hour.compareTo(secondLimit) == SMALLER;
 
-		if (closeHourIsAfterMidnight(firstLimit, secondLimit)) {
+		if (hoursAreOnTheBorderOfDays(firstLimit, secondLimit)) {
 			return (firstEquals || secondEquals) || firstComapreTo;
 		}
 		return (firstEquals || secondEquals) || (firstComapreTo && seconCompareTo);
-	}
-
-	private static boolean closeHourIsAfterMidnight(LocalTime firstLimit, LocalTime secondLimit) {
-		return secondLimit.compareTo(firstLimit) == SMALLER;
-	}
-
-	public static boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
-		LocalTime[] formHours = getHoursFromForm(reservationForm);
-		LocalTime[] reservationHours;
-
-		for (Reservation reservation : reservations) {
-			reservationHours = getHoursFromReservation(reservation);
-			if (hoursFromFormCollideWithHoursFromReservation(formHours, reservationHours)) {
-				return THE_HOUR_IS_TAKEN;
-			}
-		}
-		return THE_HOUR_IS_FREE;
 	}
 
 	private static boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours,
