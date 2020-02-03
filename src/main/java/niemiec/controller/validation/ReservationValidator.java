@@ -18,11 +18,13 @@ import niemiec.service.restaurantTable.RestaurantTableService;
 public class ReservationValidator implements Validator {
 	private final int SECONDS_IN_MINUTE = 60;
 	private RestaurantTableService restaurantTableService;
+	private ComparisonOfReservationsHours comparison;
 	
 	
 	@Autowired
-	public ReservationValidator(RestaurantTableService restaurantTableService) {
+	public ReservationValidator(RestaurantTableService restaurantTableService, ComparisonOfReservationsHours comparison) {
 		this.restaurantTableService = restaurantTableService;
+		this.comparison = comparison;
 	}
 
 	@Override
@@ -69,7 +71,7 @@ public class ReservationValidator implements Validator {
 		LocalTime endHour = form.getEndHour();
 		long minimumReservationTime = RestaurantInformation.MINIMUM_RESERVATION_TIME;
 		
-		if (!ComparisonOfReservationsHours.checkIfReservationLastsAMinimumTime(startHour, endHour, minimumReservationTime)) {
+		if (!comparison.checkIfReservationLastsAMinimumTime(startHour, endHour, minimumReservationTime)) {
 			minimumReservationTime = minimumReservationTime / SECONDS_IN_MINUTE;
 			String message = "The minimum rezervation time is " + minimumReservationTime;
 			errors.rejectValue("startHour", message, message);
@@ -82,7 +84,7 @@ public class ReservationValidator implements Validator {
 		LocalTime closeHour = RestaurantInformation.CLOSE_HOUR;
 		long timeBeforeClosing = RestaurantInformation.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
 
-		if (!ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour, timeBeforeClosing)) {
+		if (!comparison.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour, timeBeforeClosing)) {
 			timeBeforeClosing = timeBeforeClosing / SECONDS_IN_MINUTE;
 			String message = "The reservation minimum " + timeBeforeClosing + " minutes before closing restauration";
 			errors.rejectValue("startHour", message, message);
@@ -95,7 +97,7 @@ public class ReservationValidator implements Validator {
 		LocalTime openHour = RestaurantInformation.OPEN_HOUR;
 		LocalTime closeHour = RestaurantInformation.CLOSE_HOUR;
 		
-		if (!ComparisonOfReservationsHours.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour, closeHour)) {
+		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour, closeHour)) {
 			String message = "The restaurant is open from " + openHour + " to " + closeHour;
 			errors.rejectValue("startHour", message, message);
 		}		

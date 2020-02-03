@@ -14,9 +14,9 @@ import org.junit.Test;
 import niemiec.form.ReservationForm;
 import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
-import niemiec.restaurant.RestaurantInformation;
 
 public class ComparisonOfReservationsHoursTest {
+	ComparisonOfReservationsHours comparison;
 	Reservation reservation1;
 	Reservation reservation2;
 	Reservation reservation3;
@@ -28,6 +28,7 @@ public class ComparisonOfReservationsHoursTest {
 	
 	@Before
 	public void init() {
+		comparison = new ComparisonOfReservationsHours();
 		dateFormtter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		
@@ -46,19 +47,19 @@ public class ComparisonOfReservationsHoursTest {
 	@Test
 	public void testCheckIfItIsFreeTime() {
 		ReservationForm reservationForm = createReservationFormWithStartAndEndHours("13:00", "15:00");
-		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), false);
+		assertEquals(comparison.checkIfItIsFreeTime(reservations, reservationForm), false);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("15:00", "16:00");
-		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
+		assertEquals(comparison.checkIfItIsFreeTime(reservations, reservationForm), true);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("15:00", "17:00");
-		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
+		assertEquals(comparison.checkIfItIsFreeTime(reservations, reservationForm), true);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("19:15", "19:20");
-		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), true);
+		assertEquals(comparison.checkIfItIsFreeTime(reservations, reservationForm), true);
 		
 		reservationForm = createReservationFormWithStartAndEndHours("20:30", "22:00");
-		assertEquals(ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm), false);
+		assertEquals(comparison.checkIfItIsFreeTime(reservations, reservationForm), false);
 		
 	}
 	
@@ -195,17 +196,17 @@ public class ComparisonOfReservationsHoursTest {
 	}
 	
 	private Object checkResrvationMinimumTime(LocalTime startHour, LocalTime endHour, long min) {
-		return ComparisonOfReservationsHours.checkIfReservationLastsAMinimumTime(startHour, endHour, min);
+		return comparison.checkIfReservationLastsAMinimumTime(startHour, endHour, min);
 	}
 
 	private boolean checkBeforeClosing(LocalTime startHour, LocalTime closeHour,
 			long minReservationTimeBeforeClosing) {
-		return ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour, minReservationTimeBeforeClosing);
+		return comparison.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour, minReservationTimeBeforeClosing);
 	}
 	
 	private boolean checkBetweenWorkingHours(LocalTime startHour, LocalTime endHour,
 			LocalTime openHour, LocalTime closeHour) {
-		return ComparisonOfReservationsHours.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour, closeHour);
+		return comparison.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour, closeHour);
 	}
 	
 	private ReservationForm createReservationFormWithStartAndEndHours(String startHour, String endHour) {

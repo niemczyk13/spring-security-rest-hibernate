@@ -18,15 +18,18 @@ public class ReservationsManagementLogic {
 	private RestaurantTableService tableService;
 	private ReservationService reservationService;
 	private ResponseToReservationRequest response;
+	private ComparisonOfReservationsHours comparison;
 	
 	
 	public ReservationsManagementLogic() {
 	}
 
 	@Autowired
-	public ReservationsManagementLogic(RestaurantTableService tableService, ReservationService reservationService) {
+	public ReservationsManagementLogic(RestaurantTableService tableService, ReservationService reservationService
+			, ComparisonOfReservationsHours comparison) {
 		this.tableService = tableService;
 		this.reservationService = reservationService;
+		this.comparison = comparison;
 	}
 
 	public ResponseToReservationRequest startReservation(ReservationForm reservationForm) {
@@ -36,7 +39,7 @@ public class ReservationsManagementLogic {
 		List<Reservation> reservations = table.getReservationsFromDate(reservationForm.getDate());
 		
 		
-		if (ComparisonOfReservationsHours.checkIfItIsFreeTime(reservations, reservationForm)) {
+		if (comparison.checkIfItIsFreeTime(reservations, reservationForm)) {
 			Reservation reservation = new Reservation(reservationForm);
 			reservation.setRestaurantTable(table);
 			table.addReservation(reservation);
