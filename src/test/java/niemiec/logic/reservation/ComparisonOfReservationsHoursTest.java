@@ -26,6 +26,8 @@ public class ComparisonOfReservationsHoursTest {
 	DateTimeFormatter dateFormtter;
 	DateTimeFormatter timeFormatter;
 	
+	ComparisonOfReservationsHours comparison;
+	
 	@Before
 	public void init() {
 		comparison = new ComparisonOfReservationsHours();
@@ -42,6 +44,8 @@ public class ComparisonOfReservationsHoursTest {
 		reservations.add(reservation2);
 		reservations.add(reservation3);
 		reservations.add(reservation4);
+		
+		comparison = new ComparisonOfReservationsHours();
 	}
 
 	@Test
