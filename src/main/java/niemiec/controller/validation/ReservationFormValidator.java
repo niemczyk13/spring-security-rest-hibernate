@@ -15,8 +15,18 @@ import niemiec.service.restaurantTable.RestaurantTableService;
 @Component
 public class ReservationFormValidator {
 	private final int SECONDS_IN_MINUTE = 60;
-	@Autowired
+	
 	private RestaurantTableService restaurantTableService;
+	private ComparisonOfReservationsHours comparison;
+
+	public ReservationFormValidator() {
+	}
+
+	@Autowired
+	public ReservationFormValidator(RestaurantTableService restaurantTableService, ComparisonOfReservationsHours comparison) {
+		this.restaurantTableService = restaurantTableService;
+		this.comparison = comparison;
+	}
 
 	public void validate(ReservationForm form, Errors errors) {
 		validateRestaurantTable(form, errors);
@@ -57,7 +67,7 @@ public class ReservationFormValidator {
 		LocalTime endHour = form.getEndHour();
 		long minimumReservationTime = RestaurantInformations.MINIMUM_RESERVATION_TIME;
 
-		if (!ComparisonOfReservationsHours.checkIfReservationLastsAMinimumTime(startHour, endHour,
+		if (!comparison.checkIfReservationLastsAMinimumTime(startHour, endHour,
 				minimumReservationTime)) {
 			minimumReservationTime = minimumReservationTime / SECONDS_IN_MINUTE;
 			String message = "The minimum rezervation time is " + minimumReservationTime;
@@ -71,7 +81,7 @@ public class ReservationFormValidator {
 		LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
 		long timeBeforeClosing = RestaurantInformations.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
 
-		if (!ComparisonOfReservationsHours.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour,
+		if (!comparison.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour,
 				timeBeforeClosing)) {
 			timeBeforeClosing = timeBeforeClosing / SECONDS_IN_MINUTE;
 			String message = "The reservation minimum " + timeBeforeClosing + " minutes before closing restauration";
@@ -85,7 +95,7 @@ public class ReservationFormValidator {
 		LocalTime openHour = RestaurantInformations.OPEN_HOUR;
 		LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
 
-		if (!ComparisonOfReservationsHours.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour,
+		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour,
 				closeHour)) {
 			String message = "The restaurant is open from " + openHour + " to " + closeHour;
 			errors.rejectValue("startHour", message, message);
