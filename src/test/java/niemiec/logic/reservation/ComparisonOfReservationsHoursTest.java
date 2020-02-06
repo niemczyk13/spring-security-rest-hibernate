@@ -14,7 +14,6 @@ import org.junit.Test;
 import niemiec.form.ReservationForm;
 import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
-import niemiec.restaurant.RestaurantInformation;
 
 public class ComparisonOfReservationsHoursTest {
 	Reservation reservation1;

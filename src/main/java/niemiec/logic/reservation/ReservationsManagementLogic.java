@@ -42,6 +42,7 @@ public class ReservationsManagementLogic {
 			table.addReservation(reservation);
 			tableService.update(table.getId(), table);
 			reservationService.save(reservation);
+			//stwórz pozytywną odpowiedz
 		} else {
 			// jeżeli jest zajęte to szuka wolnego stolika z wystarczającą liczbą miejsc na daną godzinę
 			// podaje też wolne godziny +- 2h na chcianym i innych stolikach - póki co opcjlonalne
