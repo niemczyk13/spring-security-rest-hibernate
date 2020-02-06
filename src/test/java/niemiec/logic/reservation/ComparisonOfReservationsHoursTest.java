@@ -16,6 +16,7 @@ import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
 
 public class ComparisonOfReservationsHoursTest {
+	ComparisonOfReservationsHours comparison;
 	Reservation reservation1;
 	Reservation reservation2;
 	Reservation reservation3;
@@ -29,6 +30,7 @@ public class ComparisonOfReservationsHoursTest {
 	
 	@Before
 	public void init() {
+		comparison = new ComparisonOfReservationsHours();
 		dateFormtter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		
