@@ -26,7 +26,6 @@ public class ComparisonOfReservationsHoursTest {
 	DateTimeFormatter dateFormtter;
 	DateTimeFormatter timeFormatter;
 	
-	ComparisonOfReservationsHours comparison;
 	
 	@Before
 	public void init() {
