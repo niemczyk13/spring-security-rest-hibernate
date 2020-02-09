@@ -68,7 +68,9 @@ public class RestaurantTable {
 	}
 
 	public List<Reservation> getReservationsFromDate(LocalDate date) {
-		return reservations.stream().filter(r -> r.getDate().equals(date)).collect(Collectors.toList());
+		List<Reservation> list = reservations.stream().filter(r -> r.getDate().equals(date)).collect(Collectors.toList());
+		if (reservations == null) return new ArrayList<>();
+		return list;
 	}
 
 	public void deleteReservationsToDate(LocalDate date) {

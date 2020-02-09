@@ -29,6 +29,7 @@ public class ReservationFormValidator {
 	}
 
 	public void validate(ReservationForm form, Errors errors) {
+		// TODO DODAĆ OPCJĘ CZY CZAS WEJŚCIA NIE JEST PÓŹNIEJSZY NIŻ WYJŚCIA
 		validateRestaurantTable(form, errors);
 		checkIfTheGivenHoursAreInWorkingHours(form, errors);
 		checkIfReservationTheRightTimeBeforeClosing(form, errors);

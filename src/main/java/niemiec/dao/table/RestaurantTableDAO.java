@@ -12,4 +12,5 @@ public interface RestaurantTableDAO extends GenericDAO<RestaurantTable> {
 	void update(long id, RestaurantTable table);
 	void delete(long id);
 	RestaurantTable getByTableNumber(int tableNumber);
+	List<RestaurantTable> getByNumberOfSeatsGreaterThanEqual(int numberOfSeats);
 }

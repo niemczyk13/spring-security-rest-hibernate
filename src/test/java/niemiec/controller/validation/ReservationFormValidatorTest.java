@@ -51,7 +51,6 @@ public class ReservationFormValidatorTest {
 	}
 
 	private ReservationForm createReservationForm() {
-		// TODO Auto-generated method stub
 		ReservationForm reservationForm = new ReservationForm();
 		reservationForm.setDate(createLocalDate("2020-05-02"));
 		reservationForm.setEmail("niemczyk13@o2.pl");
@@ -67,9 +66,9 @@ public class ReservationFormValidatorTest {
 
 	@Test
 	public void testValidate() {
-
 		when(service.getByTableNumber(22)).thenReturn(table);
 		validator.validate(reservationForm, errors);
+		// TODO
 	}
 
 	private LocalTime createLocalTime(String hour) {

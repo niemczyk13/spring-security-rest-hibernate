@@ -44,4 +44,9 @@ public class RestaurantTableDAOImpl implements RestaurantTableDAO {
 	public RestaurantTable getByTableNumber(int tableNumber) {
 		return tableRepository.findByTableNumber(tableNumber);
 	}
+
+	@Override
+	public List<RestaurantTable> getByNumberOfSeatsGreaterThanEqual(int numberOfSeats) {
+		return tableRepository.findByNumberOfSeatsGreaterThanEqual(numberOfSeats);
+	}
 }

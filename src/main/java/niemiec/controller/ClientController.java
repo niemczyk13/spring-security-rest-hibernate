@@ -27,6 +27,7 @@ import niemiec.service.restaurantTable.RestaurantTableService;
 public class ClientController {
 
 	private ReservationValidator reservationValidator;
+	@Autowired
 	private ReservationsManagementLogic reservationManagementLogic;
 	@Autowired
 	private RestaurantTableService restaurantTableService;

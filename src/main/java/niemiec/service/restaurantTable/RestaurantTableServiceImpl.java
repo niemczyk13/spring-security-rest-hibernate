@@ -50,5 +50,10 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
 	public RestaurantTable getByTableNumber(int tableNumber) {
 		return restaurantTableDAO.getByTableNumber(tableNumber);
 	}
+
+	@Override
+	public List<RestaurantTable> getByNumberOfSeatsGreaterThanEqual(int numberOfSeats) {
+		return restaurantTableDAO.getByNumberOfSeatsGreaterThanEqual(numberOfSeats);
+	}
 	
 }

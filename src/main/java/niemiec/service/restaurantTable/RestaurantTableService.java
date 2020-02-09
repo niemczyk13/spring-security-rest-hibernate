@@ -11,4 +11,5 @@ public interface RestaurantTableService {
 	RestaurantTable get(long id);
 	RestaurantTable getByTableNumber(int tableNumber);
 	List<RestaurantTable> list();
+	List<RestaurantTable> getByNumberOfSeatsGreaterThanEqual(int numberOfSeats);
 }

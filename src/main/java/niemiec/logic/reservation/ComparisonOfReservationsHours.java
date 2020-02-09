@@ -2,12 +2,17 @@ package niemiec.logic.reservation;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import niemiec.form.ReservationForm;
 import niemiec.model.Reservation;
+import niemiec.response.TimeInterval;
+import niemiec.response.TimeIntervals;
+import niemiec.restaurant.RestaurantInformations;
 
 @Component
 public class ComparisonOfReservationsHours {
@@ -27,15 +32,16 @@ public class ComparisonOfReservationsHours {
 		return betweenTheHoursIsEqualsOrGreaterTimeDifference(startHour, endHour, minimumReservationTime);
 	}
 
-	public boolean checkIfReservationTheRightTimeBeforeClosing(LocalTime startHour,
-			LocalTime closeHour, long minReservationTimeBeforeClosing) {
+	public boolean checkIfReservationTheRightTimeBeforeClosing(LocalTime startHour, LocalTime closeHour,
+			long minReservationTimeBeforeClosing) {
 		return betweenTheHoursIsEqualsOrGreaterTimeDifference(startHour, closeHour, minReservationTimeBeforeClosing);
 	}
-	
-	private boolean betweenTheHoursIsEqualsOrGreaterTimeDifference(LocalTime startHour, LocalTime endHour, long minimumTime) {
+
+	private boolean betweenTheHoursIsEqualsOrGreaterTimeDifference(LocalTime startHour, LocalTime endHour,
+			long minimumTime) {
 		Duration difference;
 		Duration minTime = Duration.ofSeconds(minimumTime);
-		
+
 		if (hoursAreOnTheBorderOfDays(startHour, endHour)) {
 			difference = calculateTheTimeDifferenceBetweenDays(startHour, endHour);
 		} else {
@@ -44,18 +50,18 @@ public class ComparisonOfReservationsHours {
 		return timeIsEqualsOrSmaller(minTime, difference);
 	}
 
-	public boolean checkIfTheGivenHoursAreInWorkingHours(LocalTime startHour, LocalTime endHour,
-			LocalTime openHour, LocalTime closeHour) {
+	public boolean checkIfTheGivenHoursAreInWorkingHours(LocalTime startHour, LocalTime endHour, LocalTime openHour,
+			LocalTime closeHour) {
 		boolean startHourIsBetween = theHourIsBeetweenOrEquals(startHour, openHour, closeHour);
 		boolean endHourIsBetween = theHourIsBeetweenOrEquals(endHour, openHour, closeHour);
-	
+
 		return startHourIsBetween && endHourIsBetween;
 	}
 
 	public boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
 		LocalTime[] formHours = getHoursFromForm(reservationForm);
 		LocalTime[] reservationHours;
-	
+
 		for (Reservation reservation : reservations) {
 			reservationHours = getHoursFromReservation(reservation);
 			if (hoursFromFormCollideWithHoursFromReservation(formHours, reservationHours)) {
@@ -73,9 +79,9 @@ public class ComparisonOfReservationsHours {
 		Duration first = Duration.between(startHour, LocalTime.MIDNIGHT);
 		Duration oneDay = Duration.ofSeconds(ONE_DAY_IN_SECONDS);
 		first = first.plus(oneDay);
-		
+
 		Duration second = Duration.between(LocalTime.MIDNIGHT, endHour);
-		
+
 		return first.plus(second);
 	}
 
@@ -96,8 +102,7 @@ public class ComparisonOfReservationsHours {
 		return (firstEquals || secondEquals) || (firstComapreTo && seconCompareTo);
 	}
 
-	private boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours,
-			LocalTime[] reservationHours) {
+	private boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours, LocalTime[] reservationHours) {
 		if (startHourFromFormIsAtTheEndOrAfterExistReservation(formHours[START_HOUR], reservationHours[END_HOUR])) {
 			return NO_COLLISION;
 		} else if (endHourFromFormIsAtTheStartOrBeforeExistReservation(formHours[END_HOUR],
@@ -128,6 +133,37 @@ public class ComparisonOfReservationsHours {
 
 	private boolean endHourFromFormIsAtTheStartOrBeforeExistReservation(LocalTime endHour, LocalTime startHour) {
 		return endHour.equals(startHour) || endHour.compareTo(startHour) == SMALLER;
+	}
+
+	public TimeIntervals findFreeTimesInTable(List<Reservation> reservations) {
+		LocalTime start = RestaurantInformations.OPEN_HOUR;
+		TimeIntervals timeIntervals = new TimeIntervals();
+
+		LocalTime startHour;
+		LocalTime endHour;
+
+		reservations = reservations.stream().sorted(Comparator.comparing(Reservation::getStartHour))
+				.collect(Collectors.toList());
+		System.out.println(reservations);
+		for (Reservation reservation : reservations) {
+			// TODO UWZGLĘDNIĆ OPCJĘ PO PÓŁNOCY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			TimeInterval timeInterval = new TimeInterval();
+			startHour = reservation.getStartHour();
+			endHour = reservation.getEndHour();
+			if (!start.equals(startHour)) {
+				timeInterval.setStartHour(start);
+				timeInterval.setEndHour(startHour);
+				start = endHour;
+				timeIntervals.addTimeInterval(timeInterval);
+			}
+		}
+		if (!start.equals(RestaurantInformations.CLOSE_HOUR)) {
+			TimeInterval timeInterval = new TimeInterval();
+			timeInterval.setStartHour(start);
+			timeInterval.setEndHour(RestaurantInformations.CLOSE_HOUR);
+			timeIntervals.addTimeInterval(timeInterval);
+		}
+		return timeIntervals;
 	}
 
 }
