@@ -102,9 +102,11 @@ public class ComparisonOfReservationsHoursTest {
 		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), false);
 	
 
+		openHour = createLocalTime("14:00");
 		closeHour = createLocalTime("01:00");
-		startHour = createLocalTime("23:00");
-		
+		startHour = createLocalTime("23:30");
+		endHour = createLocalTime("00:30");
+		assertEquals(checkBetweenWorkingHours(startHour, endHour, openHour, closeHour), true);
 	}
 	
 	@Test

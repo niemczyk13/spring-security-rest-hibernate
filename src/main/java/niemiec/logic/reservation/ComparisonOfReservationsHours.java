@@ -92,14 +92,17 @@ public class ComparisonOfReservationsHours {
 	private boolean theHourIsBeetweenOrEquals(LocalTime hour, LocalTime firstLimit, LocalTime secondLimit) {
 		boolean firstEquals = hour.equals(firstLimit);
 		boolean secondEquals = hour.equals(secondLimit);
+		boolean hourLaterFirstLimit = hour.compareTo(firstLimit) == BIGGER;
+		boolean hourBeforeSecondLimit = hour.compareTo(secondLimit) == SMALLER;
 
-		boolean firstComapreTo = hour.compareTo(firstLimit) == BIGGER;
-		boolean seconCompareTo = hour.compareTo(secondLimit) == SMALLER;
-
-		if (hoursAreOnTheBorderOfDays(firstLimit, secondLimit)) {
-			return (firstEquals || secondEquals) || firstComapreTo;
+		if (firstEquals || secondEquals) {
+			return true;
+		} else if (hoursAreOnTheBorderOfDays(firstLimit, secondLimit)) {
+			return hourLaterFirstLimit || hourBeforeSecondLimit;
+		} else {
+			return hourLaterFirstLimit && hourBeforeSecondLimit;
 		}
-		return (firstEquals || secondEquals) || (firstComapreTo && seconCompareTo);
+		
 	}
 
 	private boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours, LocalTime[] reservationHours) {
@@ -147,14 +150,23 @@ public class ComparisonOfReservationsHours {
 		System.out.println(reservations);
 		for (Reservation reservation : reservations) {
 			// TODO UWZGLĘDNIĆ OPCJĘ PO PÓŁNOCY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// if endHour < openHour
+			// jeżeli tak to jeszcze sprawdzamy czy startHout < openHour
 			TimeInterval timeInterval = new TimeInterval();
 			startHour = reservation.getStartHour();
 			endHour = reservation.getEndHour();
+
 			if (!start.equals(startHour)) {
-				timeInterval.setStartHour(start);
-				timeInterval.setEndHour(startHour);
-				start = endHour;
-				timeIntervals.addTimeInterval(timeInterval);
+
+//				if (hoursAreOnTheBorderOfDays(start, startHour)) {
+//					
+//				} else {
+
+					timeInterval.setStartHour(start);
+					timeInterval.setEndHour(startHour);
+					start = endHour;
+					timeIntervals.addTimeInterval(timeInterval);
+//				}
 			}
 		}
 		if (!start.equals(RestaurantInformations.CLOSE_HOUR)) {

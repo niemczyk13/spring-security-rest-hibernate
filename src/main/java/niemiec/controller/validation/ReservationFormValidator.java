@@ -1,6 +1,7 @@
 package niemiec.controller.validation;
 
 import java.time.LocalTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -60,7 +61,7 @@ public class ReservationFormValidator {
 	}
 
 	private boolean restaurantTableExist(RestaurantTable restaurantTable) {
-		return restaurantTable != null;
+		return Optional.ofNullable(restaurantTable).isPresent();
 	}
 
 	private void checkIfReservationLastsAMinimumTime(ReservationForm form, Errors errors) {
