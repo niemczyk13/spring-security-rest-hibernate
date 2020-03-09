@@ -159,6 +159,8 @@ public class ComparisonOfReservationsHours {
 			if (!start.equals(startHour)) {
 
 //				if (hoursAreOnTheBorderOfDays(start, startHour)) {
+				// TODO if (start.compareTo(RestaurantInformations.CLOSE_HOUR) == SMALLER) {
+				
 //					
 //				} else {
 
