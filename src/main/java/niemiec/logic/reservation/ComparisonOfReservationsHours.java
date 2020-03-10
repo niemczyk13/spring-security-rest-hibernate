@@ -59,6 +59,7 @@ public class ComparisonOfReservationsHours {
 	}
 
 	public boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
+		// TODO tworzy LocalDateTime i porównuje na tej podstawie
 		LocalTime[] formHours = getHoursFromForm(reservationForm);
 		LocalTime[] reservationHours;
 
@@ -102,15 +103,20 @@ public class ComparisonOfReservationsHours {
 		} else {
 			return hourLaterFirstLimit && hourBeforeSecondLimit;
 		}
-		
+
 	}
 
 	private boolean hoursFromFormCollideWithHoursFromReservation(LocalTime[] formHours, LocalTime[] reservationHours) {
-		if (startHourFromFormIsAtTheEndOrAfterExistReservation(formHours[START_HOUR], reservationHours[END_HOUR])) {
-			return NO_COLLISION;
-		} else if (endHourFromFormIsAtTheStartOrBeforeExistReservation(formHours[END_HOUR],
-				reservationHours[START_HOUR])) {
-			return NO_COLLISION;
+		// TODO dodać opcję dla zamknięcia po północy
+		if (hoursAreOnTheBorderOfDays(reservationHours[START_HOUR], reservationHours[END_HOUR])) {
+			//
+		} else {
+			if (startHourFromFormIsAtTheEndOrAfterExistReservation(formHours[START_HOUR], reservationHours[END_HOUR])) {
+				return NO_COLLISION;
+			} else if (endHourFromFormIsAtTheStartOrBeforeExistReservation(formHours[END_HOUR],
+					reservationHours[START_HOUR])) {
+				return NO_COLLISION;
+			}
 		}
 		return COLLISION;
 	}
@@ -159,15 +165,15 @@ public class ComparisonOfReservationsHours {
 			if (!start.equals(startHour)) {
 
 //				if (hoursAreOnTheBorderOfDays(start, startHour)) {
-				// TODO if (start.compareTo(RestaurantInformations.CLOSE_HOUR) == SMALLER) {
-				
+//				if (start.compareTo(RestaurantInformations.CLOSE_HOUR) == SMALLER) {
+				// if ()
 //					
 //				} else {
 
-					timeInterval.setStartHour(start);
-					timeInterval.setEndHour(startHour);
-					start = endHour;
-					timeIntervals.addTimeInterval(timeInterval);
+				timeInterval.setStartHour(start);
+				timeInterval.setEndHour(startHour);
+				start = endHour;
+				timeIntervals.addTimeInterval(timeInterval);
 //				}
 			}
 		}
