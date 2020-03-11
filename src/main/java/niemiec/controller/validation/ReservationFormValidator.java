@@ -1,5 +1,6 @@
 package niemiec.controller.validation;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -65,11 +66,12 @@ public class ReservationFormValidator {
 	}
 
 	private void checkIfReservationLastsAMinimumTime(ReservationForm form, Errors errors) {
+		LocalDate date = form.getDate();
 		LocalTime startHour = form.getStartHour();
 		LocalTime endHour = form.getEndHour();
 		long minimumReservationTime = RestaurantInformations.MINIMUM_RESERVATION_TIME;
 
-		if (!comparison.checkIfReservationLastsAMinimumTime(startHour, endHour,
+		if (!comparison.checkIfReservationLastsAMinimumTime(date, startHour, endHour,
 				minimumReservationTime)) {
 			minimumReservationTime = minimumReservationTime / SECONDS_IN_MINUTE;
 			String message = "The minimum rezervation time is " + minimumReservationTime;
@@ -79,11 +81,12 @@ public class ReservationFormValidator {
 	}
 
 	private void checkIfReservationTheRightTimeBeforeClosing(ReservationForm form, Errors errors) {
+		LocalDate date = form.getDate();
 		LocalTime startHour = form.getStartHour();
 		LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
 		long timeBeforeClosing = RestaurantInformations.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
 
-		if (!comparison.checkIfReservationTheRightTimeBeforeClosing(startHour, closeHour,
+		if (!comparison.checkIfReservationTheRightTimeBeforeClosing(date, startHour, closeHour,
 				timeBeforeClosing)) {
 			timeBeforeClosing = timeBeforeClosing / SECONDS_IN_MINUTE;
 			String message = "The reservation minimum " + timeBeforeClosing + " minutes before closing restauration";
@@ -92,12 +95,13 @@ public class ReservationFormValidator {
 	}
 
 	private void checkIfTheGivenHoursAreInWorkingHours(ReservationForm form, Errors errors) {
+		LocalDate date = form.getDate();
 		LocalTime startHour = form.getStartHour();
 		LocalTime endHour = form.getEndHour();
 		LocalTime openHour = RestaurantInformations.OPEN_HOUR;
 		LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
 
-		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(startHour, endHour, openHour,
+		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour, openHour,
 				closeHour)) {
 			String message = "The restaurant is open from " + openHour + " to " + closeHour;
 			errors.rejectValue("startHour", message, message);
