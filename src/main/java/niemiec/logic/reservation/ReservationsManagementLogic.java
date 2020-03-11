@@ -42,31 +42,32 @@ public class ReservationsManagementLogic {
 		List<Reservation> reservations = table.getReservationsFromDate(reservationForm.getDate());
 		
 		if (reservations.isEmpty() || comparison.checkIfItIsFreeTime(reservations, reservationForm)) {
-			Reservation reservation = new Reservation(reservationForm);
-			reservation.setRestaurantTable(table);
-			table.addReservation(reservation);
-			reservationService.save(reservation);
-			tableService.update(table.getId(), table);
+			Reservation reservation = createReservation(reservationForm, table);
+			
 			response.setReservation(reservation);
 			response.setHttpStatus(HttpStatus.OK);
-			//stwórz pozytywną odpowiedz
 		} else {
-			// jeżeli jest zajęte to szuka wolnego stolika z wystarczającą liczbą miejsc na daną godzinę
-			// podaje też wolne godziny +- 2h na chcianym i innych stolikach - póki co opcjlonalne
 			List<RestaurantTable> tables = tableService.getByNumberOfSeatsGreaterThanEqual(reservationForm.getNumberOfPeople());
-			// mamy tables, teraz szukamy po rezerwacjach tych tables wolnego terminu
-			tables = findTablesWithFreeTime(tables, reservationForm);
 			
-			// wypisać wolne godziny dla danego stolika
+			tables = findTablesWithFreeTime(tables, reservationForm);
 			TimeIntervals timeIntervals = findFreeHoursInTable(table);
 			
-			System.out.println(tables);
 			response.setRestaurantTables(tables);
 			response.setTimeIntervals(timeIntervals);
-			response.setHttpStatus(HttpStatus.OK);
+			response.setHttpStatus(HttpStatus.NOT_FOUND);
 		}
 		
 		return response;
+	}
+
+	private Reservation createReservation(ReservationForm reservationForm, RestaurantTable table) {
+		// TODO Auto-generated method stub
+		Reservation reservation = new Reservation(reservationForm);
+		reservation.setRestaurantTable(table);
+		table.addReservation(reservation);
+		reservationService.save(reservation);
+		tableService.update(table.getId(), table);
+		return reservation;
 	}
 
 	private TimeIntervals findFreeHoursInTable(RestaurantTable table) {

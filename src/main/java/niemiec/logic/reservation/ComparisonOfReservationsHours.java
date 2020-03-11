@@ -160,21 +160,25 @@ public class ComparisonOfReservationsHours {
 		reservations = sortedReservationsByStartHour(reservations);
 
 		for (Reservation reservation : reservations) {
-			addHoursToTimeIntervalsIfTheyAreFree(nextFreeHour, reservation, timeIntervals);
+			System.out.println("1 " + nextFreeHour);
+			nextFreeHour = addHoursToTimeIntervalsIfTheyAreFree(nextFreeHour, reservation, timeIntervals);
+			System.out.println("2 " + nextFreeHour);
 		}
 		addHoursToTimeIntervalsIfTheyAreFreeToClose(nextFreeHour, closeHour, timeIntervals);
+		System.out.println("KONIEC " + nextFreeHour);
 
 		return timeIntervals;
 	}
 
-	private void addHoursToTimeIntervalsIfTheyAreFree(LocalTime nextFreeHour, Reservation reservation,
+	private LocalTime addHoursToTimeIntervalsIfTheyAreFree(LocalTime nextFreeHour, Reservation reservation,
 			TimeIntervals timeIntervals) {
 		LocalTime startHour = reservation.getStartHour();
-
+		System.out.println(" res: " + reservation.getStartHour() + ", " + reservation.getEndHour());
 		if (hourIsFree(nextFreeHour, startHour)) {
 			timeIntervals.addTimeInterval(createTimeInterval(nextFreeHour, startHour));
-			nextFreeHour = reservation.getEndHour();
+			return reservation.getEndHour();
 		}
+		return nextFreeHour;
 	}
 
 	private void addHoursToTimeIntervalsIfTheyAreFreeToClose(LocalTime nextFreeHour, LocalTime closeHour,
@@ -184,10 +188,10 @@ public class ComparisonOfReservationsHours {
 		}
 	}
 
-	private TimeInterval createTimeInterval(LocalTime nextFreeHour, LocalTime startHour) {
+	private TimeInterval createTimeInterval(LocalTime startHour, LocalTime endHour) {
 		TimeInterval timeInterval = new TimeInterval();
-		timeInterval.setStartHour(nextFreeHour);
-		timeInterval.setEndHour(startHour);
+		timeInterval.setStartHour(startHour);
+		timeInterval.setEndHour(endHour);
 		return timeInterval;
 	}
 
