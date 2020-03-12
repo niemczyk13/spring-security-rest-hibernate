@@ -170,7 +170,6 @@ public class ComparisonOfReservationsHours {
 	private LocalDateTime addHoursToTimeIntervalsIfTheyAreFree(LocalDateTime nextFreeHour, Reservation reservation,
 			TimeIntervals timeIntervals) {
 		LocalDateTime startHour = createLocalDateTime(reservation.getDate(), reservation.getStartHour());
-		// TODO JEŻELI CZAS POMIĘDZY REZERWACJAMI MNIEJSZY NIŻ MINIMALNY NA JEDNA REZERWACJĘ TO NIE WYPISUJ
 		if (hourIsFree(nextFreeHour, startHour) && checkIfReservationLastsAMinimumTime(reservation.getDate(), nextFreeHour.toLocalTime(), startHour.toLocalTime(), RestaurantInformations.MINIMUM_RESERVATION_TIME)) {
 			timeIntervals.addTimeInterval(createTimeInterval(nextFreeHour, startHour));
 		}
