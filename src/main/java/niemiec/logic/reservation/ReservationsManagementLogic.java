@@ -1,5 +1,6 @@
 package niemiec.logic.reservation;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public class ReservationsManagementLogic {
 			List<RestaurantTable> tables = tableService.getByNumberOfSeatsGreaterThanEqual(reservationForm.getNumberOfPeople());
 			
 			tables = findTablesWithFreeTime(tables, reservationForm);
-			TimeIntervals timeIntervals = findFreeHoursInTable(table);
+			TimeIntervals timeIntervals = findFreeHoursInTable(table, reservationForm.getDate());
 			
 			response.setRestaurantTables(tables);
 			response.setTimeIntervals(timeIntervals);
@@ -73,8 +74,8 @@ public class ReservationsManagementLogic {
 		return reservation;
 	}
 
-	private TimeIntervals findFreeHoursInTable(RestaurantTable table) {
-		return comparison.findFreeTimesInTable(table.getReservations());
+	private TimeIntervals findFreeHoursInTable(RestaurantTable table, LocalDate date) {
+		return comparison.findFreeTimesInTable(table.getReservations(), date);
 	}
 
 	private List<RestaurantTable> findTablesWithFreeTime(List<RestaurantTable> tables, ReservationForm reservationForm) {
