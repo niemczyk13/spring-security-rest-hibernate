@@ -2,6 +2,7 @@ package niemiec.logic.reservation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,8 @@ public class ReservationsManagementLogic {
 		RestaurantTable table = tableService.getByTableNumber(reservationForm.getTableNumber());
 		List<Reservation> reservations = table.getReservationsFromDate(reservationForm.getDate());
 		
+		
+		
 		if (reservations.isEmpty() || comparison.checkIfItIsFreeTime(reservations, reservationForm)) {
 			Reservation reservation = createReservation(reservationForm, table);
 			
@@ -75,10 +78,10 @@ public class ReservationsManagementLogic {
 	}
 
 	private List<RestaurantTable> findTablesWithFreeTime(List<RestaurantTable> tables, ReservationForm reservationForm) {
-		// TODO Auto-generated method stub
 		List<RestaurantTable> list = new ArrayList<>();
 		for (RestaurantTable table : tables) {
-			if (comparison.checkIfItIsFreeTime(table.getReservations(), reservationForm)) {
+			List<Reservation> reservations = table.getReservationsFromDate(reservationForm.getDate());
+			if (comparison.checkIfItIsFreeTime(reservations, reservationForm)) {
 				list.add(table);
 			}
 		}
