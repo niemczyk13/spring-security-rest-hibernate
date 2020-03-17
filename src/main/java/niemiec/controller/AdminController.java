@@ -29,6 +29,8 @@ public class AdminController {
 	public AdminController() {
 	}
 
+	// TODO DO ZROBIENIA WALIDACJA DANYCH WPROWADZANYCH PRZEZ ADMIN
+	
 	@Autowired
 	public AdminController(ReservationService reservationService, RestaurantTableService restaurantTableService) {
 		this.reservationService = reservationService;

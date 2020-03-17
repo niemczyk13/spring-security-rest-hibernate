@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.springframework.validation.Errors;
 
 import niemiec.form.ReservationForm;
-import niemiec.logic.reservation.ComparisonOfReservationsHours;
+import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.RestaurantTable;
 import niemiec.service.restaurantTable.RestaurantTableService;
 

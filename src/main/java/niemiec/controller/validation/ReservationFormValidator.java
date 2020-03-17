@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import niemiec.form.ReservationForm;
-import niemiec.logic.reservation.ComparisonOfReservationsHours;
+import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.RestaurantTable;
 import niemiec.restaurant.RestaurantInformations;
 import niemiec.service.restaurantTable.RestaurantTableService;
@@ -20,6 +20,15 @@ public class ReservationFormValidator {
 	
 	private RestaurantTableService restaurantTableService;
 	private ComparisonOfReservationsHours comparison;
+	
+	private LocalDate date;
+	private LocalTime startHour;
+	private LocalTime endHour;
+	private LocalTime openHour = RestaurantInformations.OPEN_HOUR;
+	private LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
+	private int tableNumber;
+	private int numberOfPeople;
+	private Errors errors;
 
 	public ReservationFormValidator() {
 	}
@@ -31,26 +40,43 @@ public class ReservationFormValidator {
 	}
 
 	public void validate(ReservationForm form, Errors errors) {
-		// TODO DODAĆ OPCJĘ CZY CZAS WEJŚCIA NIE JEST PÓŹNIEJSZY NIŻ WYJŚCIA
-		validateRestaurantTable(form, errors);
-		checkIfTheGivenHoursAreInWorkingHours(form, errors);
-		checkIfReservationTheRightTimeBeforeClosing(form, errors);
-		checkIfReservationLastsAMinimumTime(form, errors);
+		createStartupVariables(form, errors);
+		validateRestaurantTable();
+		checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture();
+		checkIfTheGivenHoursAreInWorkingHours();
+		checkIfReservationTheRightTimeBeforeClosing();
+		checkIfReservationLastsAMinimumTime();
 	}
 
-	private void validateRestaurantTable(ReservationForm form, Errors errors) {
+	private void createStartupVariables(ReservationForm form, Errors errors) {
+		this.date = form.getDate();
+		this.startHour = form.getStartHour();
+		this.endHour = form.getEndHour();
+		this.tableNumber = form.getTableNumber();
+		this.numberOfPeople = form.getNumberOfPeople();
+		this.errors = errors;
+	}
+
+	private void checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture() {
+		if (!comparison.checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture(date, startHour, endHour)) {
+			String message = "The entry time cannot be later than the exit time.";
+			errors.reject(message);
+		}
+	}
+
+	private void validateRestaurantTable() {
 		RestaurantTable restaurantTable;
-		restaurantTable = getRestaurantTableFromDataBase(form.getTableNumber());
+		restaurantTable = getRestaurantTableFromDataBase(tableNumber);
 		if (restaurantTableExist(restaurantTable)) {
-			checkIfTheTableHasEnoughSeats(restaurantTable, form, errors);
+			checkIfTheTableHasEnoughSeats(restaurantTable);
 		} else {
 			String message = "Table does not exist";
 			errors.rejectValue("tableNumber", message, message);
 		}
 	}
 
-	private void checkIfTheTableHasEnoughSeats(RestaurantTable restaurantTable, ReservationForm form, Errors errors) {
-		if (restaurantTable.getNumberOfSeats() < form.getNumberOfPeople()) {
+	private void checkIfTheTableHasEnoughSeats(RestaurantTable restaurantTable) {
+		if (restaurantTable.getNumberOfSeats() < numberOfPeople) {
 			String message = "The maximum number of places for table number " + restaurantTable.getTableNumber()
 					+ " is " + restaurantTable.getNumberOfSeats();
 			errors.rejectValue("numberOfPeople", message, message);
@@ -65,10 +91,7 @@ public class ReservationFormValidator {
 		return Optional.ofNullable(restaurantTable).isPresent();
 	}
 
-	private void checkIfReservationLastsAMinimumTime(ReservationForm form, Errors errors) {
-		LocalDate date = form.getDate();
-		LocalTime startHour = form.getStartHour();
-		LocalTime endHour = form.getEndHour();
+	private void checkIfReservationLastsAMinimumTime() {
 		long minimumReservationTime = RestaurantInformations.MINIMUM_RESERVATION_TIME;
 
 		if (!comparison.checkIfReservationLastsAMinimumTime(date, startHour, endHour,
@@ -80,10 +103,7 @@ public class ReservationFormValidator {
 
 	}
 
-	private void checkIfReservationTheRightTimeBeforeClosing(ReservationForm form, Errors errors) {
-		LocalDate date = form.getDate();
-		LocalTime startHour = form.getStartHour();
-		LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
+	private void checkIfReservationTheRightTimeBeforeClosing() {
 		long timeBeforeClosing = RestaurantInformations.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
 
 		if (!comparison.checkIfReservationTheRightTimeBeforeClosing(date, startHour, closeHour,
@@ -94,13 +114,7 @@ public class ReservationFormValidator {
 		}
 	}
 
-	private void checkIfTheGivenHoursAreInWorkingHours(ReservationForm form, Errors errors) {
-		LocalDate date = form.getDate();
-		LocalTime startHour = form.getStartHour();
-		LocalTime endHour = form.getEndHour();
-		LocalTime openHour = RestaurantInformations.OPEN_HOUR;
-		LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
-
+	private void checkIfTheGivenHoursAreInWorkingHours() {
 		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour, openHour,
 				closeHour)) {
 			String message = "The restaurant is open from " + openHour + " to " + closeHour;

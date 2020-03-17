@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import niemiec.form.ReservationForm;
+import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
 

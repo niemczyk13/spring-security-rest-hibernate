@@ -31,8 +31,6 @@ public class ClientController {
 	private ReservationsManagementLogic reservationManagementLogic;
 	@Autowired
 	private RestaurantTableService restaurantTableService;
-	@Autowired
-	private ReservationService reservationService;
 
 	public ClientController() {
 	}
@@ -49,30 +47,11 @@ public class ClientController {
 
 	@PostMapping("/reservations")
 	public ResponseEntity<?> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
-		// TODO - we własnej walidacji sprawdzić czy ID TABLE nie jest za duże
-		// TODO - we własnej walidacji sprawdzić czy startTime i endTime mieszczą się w
-		// granicy z RestaurantInformation
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
 		}
-		// JEŻELI WSZYSTKIE DANE POPRAWNE TO WYSZUKIWANIE WOLNEGO STOLIKA
-		// I ZAJĘTE TERMINY JUŻ NIE JAKO BŁĄD, TYLKO WTEDY WYŚWIETLAMY PROPOZYCJĘ INNYCH
-		// czy podany termin jest wolny
-		// jeżeli nie jest to informacja jak pod formularzem i propozycje innego stolika
-		// lub innych godzin
-//		
 		ResponseToReservationRequest response = reservationManagementLogic.startReservation(reservationForm);
 		return new ResponseEntity<>(response, response.getHttpStatus());
-
-//		Reservation reservation = new Reservation(reservationForm);
-//
-//		RestaurantTable restaurantTable = restaurantTableService.getByTableNumber(reservationForm.getTableNumber());
-//		reservation.setRestaurantTable(restaurantTable);
-//		restaurantTable.addReservation(reservation);
-//		reservationService.save(reservation);
-//		restaurantTableService.update(restaurantTable.getId(), restaurantTable);
-//
-//		return new ResponseEntity<>(reservation, HttpStatus.OK);
 	}
 
 	@GetMapping("/tables/{id}")

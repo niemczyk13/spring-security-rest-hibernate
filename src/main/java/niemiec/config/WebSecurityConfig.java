@@ -20,7 +20,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.and()
 //			.authorizeRequests().antMatchers(HttpMethod.POST, "/reservation/new").permitAll()
 //			.anyRequest().authenticated();
+		
 		http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
+		
+//		http.cors().and().csrf().disable()
+//			.authorizeRequests().antMatchers(HttpMethod.POST, "/reservations").permitAll()
+//			.anyRequest().authenticated();
 
 		// for run h2 console
 		http.headers().frameOptions().disable();

@@ -1,4 +1,4 @@
-package niemiec.logic.reservation;
+package niemiec.logic.reservation.comparisionHours;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -8,9 +8,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import niemiec.form.ReservationForm;
+import niemiec.logic.reservation.comparisionHours.freeTime.FreeTimesInTable;
 import niemiec.model.Reservation;
 import niemiec.response.TimeInterval;
 import niemiec.response.TimeIntervals;
@@ -28,6 +30,9 @@ public class ComparisonOfReservationsHours {
 	private static final boolean NO_COLLISION = false;
 	private static final boolean COLLISION = true;
 	private static final long ONE_DAY = 1;
+	
+	@Autowired
+	private FreeTimesInTable findFreeTimesInTable;
 
 	public boolean checkIfReservationLastsAMinimumTime(LocalDate date, LocalTime startHour, LocalTime endHour,
 			long minimumReservationTime) {
@@ -36,7 +41,7 @@ public class ComparisonOfReservationsHours {
 
 	public boolean checkIfReservationTheRightTimeBeforeClosing(LocalDate date, LocalTime startHour, LocalTime closeHour,
 			long minReservationTimeBeforeClosing) {
-
+	
 		return betweenTheHoursIsEqualsOrGreaterTimeDifference(date, startHour, closeHour,
 				minReservationTimeBeforeClosing);
 	}
@@ -45,12 +50,27 @@ public class ComparisonOfReservationsHours {
 			LocalTime endHour, long minimumTime) {
 		Duration difference;
 		Duration minTime = Duration.ofSeconds(minimumTime);
-
+	
 		LocalDateTime start = createLocalDateTime(date, startHour);
 		LocalDateTime end = createLocalDateTime(date, endHour);
 		difference = Duration.between(start, end);
-
+	
 		return timeIsEqualsOrSmaller(minTime, difference);
+	}
+
+	private LocalDateTime createLocalDateTime(LocalDate date, LocalTime hour) {
+		LocalTime openHour = RestaurantInformations.OPEN_HOUR;
+		LocalTime closeHout = RestaurantInformations.CLOSE_HOUR;
+		if ((hour.compareTo(openHour) == SMALLER && hour.compareTo(closeHout) == SMALLER) || 
+				(hour.compareTo(openHour) == SMALLER && hour.equals(closeHout))) {
+			date = date.plusDays(ONE_DAY);
+		}
+	
+		return LocalDateTime.of(date, hour);
+	}
+
+	private boolean timeIsEqualsOrSmaller(Duration first, Duration second) {
+		return first.equals(second) || first.compareTo(second) == SMALLER;
 	}
 
 	public boolean checkIfTheGivenHoursAreInWorkingHours(LocalDate date, LocalTime startHour, LocalTime endHour, LocalTime openHour,
@@ -65,6 +85,19 @@ public class ComparisonOfReservationsHours {
 		boolean endHourIsBetween = theHourIsBeetweenOrEquals(end, open, close);
 
 		return startHourIsBetween && endHourIsBetween;
+	}
+
+	private boolean theHourIsBeetweenOrEquals(LocalDateTime hour, LocalDateTime open, LocalDateTime close) {
+		boolean firstEquals = hour.equals(open);
+		boolean secondEquals = hour.equals(close);
+		boolean hourLaterFirstLimit = hour.compareTo(open) == BIGGER;
+		boolean hourBeforeSecondLimit = hour.compareTo(close) == SMALLER;
+	
+		if (firstEquals || secondEquals) {
+			return true;
+		}
+			
+		return hourLaterFirstLimit && hourBeforeSecondLimit;
 	}
 
 	public boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
@@ -88,50 +121,6 @@ public class ComparisonOfReservationsHours {
 		return createTwoElementsTableWithLocalDateTime(date, startHour, endHour);
 	}
 
-	private LocalDateTime[] createTwoElementsTableWithLocalDateTime(LocalDate date, LocalTime startHour,
-			LocalTime endHour) {
-		LocalDateTime[] reservationHours = new LocalDateTime[TABLE_SIZE_WITH_HOURS];
-		reservationHours[START_HOUR] = createLocalDateTime(date, startHour);
-		reservationHours[END_HOUR] = createLocalDateTime(date, endHour);
-		return reservationHours;
-	}
-
-	private LocalDateTime createLocalDateTime(LocalDate date, LocalTime hour) {
-		LocalTime openHour = RestaurantInformations.OPEN_HOUR;
-		LocalTime closeHout = RestaurantInformations.CLOSE_HOUR;
-		if ((hour.compareTo(openHour) == SMALLER && hour.compareTo(closeHout) == SMALLER) || 
-				(hour.compareTo(openHour) == SMALLER && hour.equals(closeHout))) {
-			date = date.plusDays(ONE_DAY);
-		}
-
-		return LocalDateTime.of(date, hour);
-	}
-
-	private LocalDateTime[] createLocalDateTimeTableFromReservationForm(Reservation reservation) {
-		LocalDate date = reservation.getDate();
-		LocalTime startHour = reservation.getStartHour();
-		LocalTime endHour = reservation.getEndHour();
-
-		return createTwoElementsTableWithLocalDateTime(date, startHour, endHour);
-	}
-
-	private boolean timeIsEqualsOrSmaller(Duration first, Duration second) {
-		return first.equals(second) || first.compareTo(second) == SMALLER;
-	}
-
-	private boolean theHourIsBeetweenOrEquals(LocalDateTime hour, LocalDateTime open, LocalDateTime close) {
-		boolean firstEquals = hour.equals(open);
-		boolean secondEquals = hour.equals(close);
-		boolean hourLaterFirstLimit = hour.compareTo(open) == BIGGER;
-		boolean hourBeforeSecondLimit = hour.compareTo(close) == SMALLER;
-
-		if (firstEquals || secondEquals) {
-			return true;
-		}
-			
-		return hourLaterFirstLimit && hourBeforeSecondLimit;
-	}
-
 	private boolean hoursFromFormCollideWithHoursFromReservation(LocalDateTime[] formHours,
 			LocalDateTime[] reservationHours) {
 		if (startHourFromFormIsAtTheEndOrAfterExistReservation(formHours[START_HOUR], reservationHours[END_HOUR])) {
@@ -141,6 +130,22 @@ public class ComparisonOfReservationsHours {
 			return NO_COLLISION;
 		}
 		return COLLISION;
+	}
+
+	private LocalDateTime[] createTwoElementsTableWithLocalDateTime(LocalDate date, LocalTime startHour,
+			LocalTime endHour) {
+		LocalDateTime[] reservationHours = new LocalDateTime[TABLE_SIZE_WITH_HOURS];
+		reservationHours[START_HOUR] = createLocalDateTime(date, startHour);
+		reservationHours[END_HOUR] = createLocalDateTime(date, endHour);
+		return reservationHours;
+	}
+
+	private LocalDateTime[] createLocalDateTimeTableFromReservationForm(Reservation reservation) {
+		LocalDate date = reservation.getDate();
+		LocalTime startHour = reservation.getStartHour();
+		LocalTime endHour = reservation.getEndHour();
+
+		return createTwoElementsTableWithLocalDateTime(date, startHour, endHour);
 	}
 
 	private boolean startHourFromFormIsAtTheEndOrAfterExistReservation(LocalDateTime startHour, LocalDateTime endHour) {
@@ -153,50 +158,13 @@ public class ComparisonOfReservationsHours {
 	}
 
 	public TimeIntervals findFreeTimesInTable(List<Reservation> reservations, LocalDate date) {
-		LocalDateTime nextFreeHour = createLocalDateTime(date, RestaurantInformations.OPEN_HOUR);
-		LocalDateTime closeHour = createLocalDateTime(date, RestaurantInformations.CLOSE_HOUR);
-		TimeIntervals timeIntervals = new TimeIntervals();
-		
-		reservations = sortedReservationsByStartHour(reservations);
-		
-		for (Reservation reservation : reservations) {
-			nextFreeHour = addHoursToTimeIntervalsIfTheyAreFree(nextFreeHour, reservation, timeIntervals);
-		}
-		addHoursToTimeIntervalsIfTheyAreFreeToClose(nextFreeHour, closeHour, timeIntervals);
-
-		return timeIntervals;
+		return findFreeTimesInTable.find(reservations, date);
 	}
 
-	private LocalDateTime addHoursToTimeIntervalsIfTheyAreFree(LocalDateTime nextFreeHour, Reservation reservation,
-			TimeIntervals timeIntervals) {
-		LocalDateTime startHour = createLocalDateTime(reservation.getDate(), reservation.getStartHour());
-		if (hourIsFree(nextFreeHour, startHour) && checkIfReservationLastsAMinimumTime(reservation.getDate(), nextFreeHour.toLocalTime(), startHour.toLocalTime(), RestaurantInformations.MINIMUM_RESERVATION_TIME)) {
-			timeIntervals.addTimeInterval(createTimeInterval(nextFreeHour, startHour));
-		}
-		return createLocalDateTime(reservation.getDate(), reservation.getEndHour());
+	public boolean checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture(LocalDate date, LocalTime startHour,
+			LocalTime endHour) {
+		LocalDateTime start = createLocalDateTime(date, startHour);
+		LocalDateTime end = createLocalDateTime(date, endHour);
+		return start.compareTo(end) == SMALLER;
 	}
-
-	private void addHoursToTimeIntervalsIfTheyAreFreeToClose(LocalDateTime nextFreeHour, LocalDateTime closeHour,
-			TimeIntervals timeIntervals) {
-		if (hourIsFree(nextFreeHour, closeHour)) {
-			timeIntervals.addTimeInterval(createTimeInterval(nextFreeHour, closeHour));
-		}
-	}
-
-	private TimeInterval createTimeInterval(LocalDateTime startHour, LocalDateTime endHour) {
-		TimeInterval timeInterval = new TimeInterval();
-		timeInterval.setStartHour(startHour);
-		timeInterval.setEndHour(endHour);
-		return timeInterval;
-	}
-
-	private List<Reservation> sortedReservationsByStartHour(List<Reservation> reservations) {
-		return reservations.stream().sorted(Comparator.comparing(Reservation::getStartHour))
-				.collect(Collectors.toList());
-	}
-
-	private boolean hourIsFree(LocalDateTime nextFreeHour, LocalDateTime hour) {
-		return nextFreeHour.compareTo(hour) == SMALLER;
-	}
-
 }
