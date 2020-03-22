@@ -5,15 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import niemiec.form.RestaurantTableForm;
 
 @Entity
 @Table(name = "RESTAURANT_TABLE")
@@ -21,17 +25,23 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class RestaurantTable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	private int tableNumber;
 	private int numberOfSeats;
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<Reservation> reservations;
 
 	public RestaurantTable() {
 		reservations = new ArrayList<Reservation>();
 	}
 
-	public long getId() {
+	public RestaurantTable(@Valid RestaurantTableForm form) {
+		this.tableNumber = form.getTableNumber();
+		this.numberOfSeats = form.getNumberOfSeats();
+		this.reservations = new ArrayList<>();
+	}
+
+	public Long getId() {
 		return id;
 	}
 

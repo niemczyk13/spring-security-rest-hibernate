@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.Errors;
 
+import niemiec.controller.validation.reservation.ReservationFormValidator;
 import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.RestaurantTable;

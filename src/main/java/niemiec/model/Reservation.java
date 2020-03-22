@@ -18,7 +18,7 @@ import niemiec.form.ReservationForm;
 public class Reservation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	protected Long id;
 	private Client client;
 	@ManyToOne
 	private RestaurantTable restaurantTable;
@@ -48,11 +48,11 @@ public class Reservation {
 		return client;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-
-	public void setId(long id) {
+	
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -102,6 +102,15 @@ public class Reservation {
 
 	public void setEndHour(LocalTime endHour) {
 		this.endHour = endHour;
+	}
+
+	public void update(Reservation reservation) {
+		this.client = reservation.getClient();
+		this.date = reservation.getDate();
+		this.endHour = reservation.getEndHour();
+		this.numberOfPeople = reservation.getNumberOfPeople();
+		this.restaurantTable = reservation.getRestaurantTable();
+		this.startHour = reservation.getStartHour();
 	}
 
 }

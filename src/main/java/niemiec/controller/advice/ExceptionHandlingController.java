@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import niemiec.controller.AdminController;
+import niemiec.controller.EmployeeRestaurantTableController;
 import niemiec.controller.ClientController;
 import niemiec.response.ExceptionResponse;
 
 @RestController
-@ControllerAdvice(assignableTypes = { AdminController.class, ClientController.class })
+@ControllerAdvice(assignableTypes = { EmployeeRestaurantTableController.class, ClientController.class })
 public class ExceptionHandlingController extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(EntityNotFoundException.class)

@@ -4,9 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Component;
 import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.comparisionHours.freeTime.FreeTimesInTable;
 import niemiec.model.Reservation;
-import niemiec.response.TimeInterval;
 import niemiec.response.TimeIntervals;
 import niemiec.restaurant.RestaurantInformations;
 

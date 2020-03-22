@@ -1,6 +1,5 @@
 package niemiec.controller;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,36 +7,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import niemiec.controller.validation.ReservationValidator;
+import niemiec.controller.validation.reservation.ReservationValidator;
 import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.ReservationsManagementLogic;
-import niemiec.model.Reservation;
-import niemiec.model.RestaurantTable;
 import niemiec.response.ResponseToReservationRequest;
-import niemiec.service.reservation.ReservationService;
-import niemiec.service.restaurantTable.RestaurantTableService;
 
 @RestController
 public class ClientController {
 
 	private ReservationValidator reservationValidator;
-	@Autowired
 	private ReservationsManagementLogic reservationManagementLogic;
-	@Autowired
-	private RestaurantTableService restaurantTableService;
 
 	public ClientController() {
 	}
 
 	@Autowired
-	public ClientController(ReservationValidator reservationValidator) {
+	public ClientController(ReservationValidator reservationValidator, 
+			ReservationsManagementLogic reservationManagementLogic) {
 		this.reservationValidator = reservationValidator;
+		this.reservationManagementLogic = reservationManagementLogic;
 	}
 
 	@InitBinder
@@ -52,19 +44,5 @@ public class ClientController {
 		}
 		ResponseToReservationRequest response = reservationManagementLogic.startReservation(reservationForm);
 		return new ResponseEntity<>(response, response.getHttpStatus());
-	}
-
-	@GetMapping("/tables/{id}")
-	public ResponseEntity<?> getRestaurantTableByTableNumber(@PathVariable int id) {
-		RestaurantTable restaurantTable = getRestaurantTableByIdFromService(id);
-		return new ResponseEntity<>(restaurantTable, HttpStatus.OK);
-	}
-
-	private RestaurantTable getRestaurantTableByIdFromService(int id) {
-		RestaurantTable restaurantTable = restaurantTableService.get(id);
-		if (restaurantTable == null) {
-			throw new EntityNotFoundException("Table with id = " + id + " does not exist.");
-		}
-		return restaurantTable;
 	}
 }

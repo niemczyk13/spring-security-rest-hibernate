@@ -31,8 +31,9 @@ public class ReservationDAOImpl implements ReservationDAO {
 
 	@Override
 	public void update(long id, Reservation reservation) {
-		reservation.setId(id);
-		reservationRepository.save(reservation);
+		Reservation r = reservationRepository.getOne(id);
+		r.update(reservation);
+		reservationRepository.save(r);
 	}
 
 	@Override

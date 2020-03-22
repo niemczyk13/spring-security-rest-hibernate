@@ -1,4 +1,4 @@
-package niemiec.controller.validation;
+package niemiec.controller.validation.reservation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package niemiec.controller.validation;
+package niemiec.controller.validation.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
