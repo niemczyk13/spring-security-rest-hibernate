@@ -50,9 +50,9 @@ public class ReservationsManagementLogic {
 
 	private ResponseToReservationRequest tryToMakeAReservation() {
 		if (reservationTimeIsFree()) {
-			return createOkResponseF();
+			return createOkResponse();
 		}
-		
+
 		return createNotFoundResponse();
 	}
 
@@ -60,7 +60,7 @@ public class ReservationsManagementLogic {
 		findFreeTables();
 		findTimeIntervals();
 		addDataToResponseNotFound();
-		
+
 		return response;
 	}
 
@@ -79,11 +79,11 @@ public class ReservationsManagementLogic {
 		tables = findTablesWithFreeTime(tables, reservationForm);
 	}
 
-	private ResponseToReservationRequest createOkResponseF() {
+	private ResponseToReservationRequest createOkResponse() {
 		createReservation();
 		addReservationToDatabase();
 		addDataToResponseOK();
-		
+
 		return response;
 	}
 
@@ -129,7 +129,5 @@ public class ReservationsManagementLogic {
 		}
 		return list;
 	}
-
-	
 
 }

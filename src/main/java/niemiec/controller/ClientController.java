@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.ReservationsManagementLogic;
 import niemiec.response.ResponseToReservationRequest;
 
+@CrossOrigin
 @RestController
 public class ClientController {
 
