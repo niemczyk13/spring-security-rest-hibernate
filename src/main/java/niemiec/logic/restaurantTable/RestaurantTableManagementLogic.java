@@ -2,6 +2,7 @@ package niemiec.logic.restaurantTable;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -114,10 +115,11 @@ public class RestaurantTableManagementLogic {
 	}
 
 	private void createResponseForGetTableById(Long id) {
-		if (restaurantTable == null) {
+		if (Optional.ofNullable(restaurantTable).isPresent()) {
+			addDataToOkResponse();
+		} else {
 			throw new EntityNotFoundException("Table with id = " + id + " does not exist.");
 		}
-		addDataToOkResponse();
 	}
 
 	public ResponseToRestaurantTableRequest deleteRestaurantTableById(Long id) {

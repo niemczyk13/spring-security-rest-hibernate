@@ -1,4 +1,4 @@
-package niemiec.response;
+package niemiec.response.reservationRequest;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
+import niemiec.response.TimeIntervals;
 
 public class ResponseToReservationRequest {
 	private Reservation reservation;

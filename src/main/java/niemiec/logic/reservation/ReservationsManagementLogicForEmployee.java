@@ -1,6 +1,7 @@
 package niemiec.logic.reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -50,10 +51,11 @@ public class ReservationsManagementLogicForEmployee {
 
 	private Reservation getReservationFromService(Long id) {
 		Reservation reservation = reservationService.get(id);
-		if (reservation == null) {
+		if (Optional.ofNullable(reservation).isPresent()) {
+			return reservation;
+		} else {
 			throw new EntityNotFoundException("Reservation with id = " + id + " does not exist.");
 		}
-		return reservation;
 	}
 
 	private void createOkResponse() {

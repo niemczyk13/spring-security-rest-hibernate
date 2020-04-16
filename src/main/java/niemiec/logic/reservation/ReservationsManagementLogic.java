@@ -9,11 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import niemiec.form.ReservationForm;
+import niemiec.form.TimeIntervalsForm;
 import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.Reservation;
 import niemiec.model.RestaurantTable;
-import niemiec.response.ResponseToReservationRequest;
 import niemiec.response.TimeIntervals;
+import niemiec.response.reservationRequest.ResponseToReservationRequest;
+import niemiec.response.reservationRequest.ResponseToTimeIntervalsRequest;
 import niemiec.service.reservation.ReservationService;
 import niemiec.service.restaurantTable.RestaurantTableService;
 
@@ -31,6 +33,7 @@ public class ReservationsManagementLogic {
 	private List<RestaurantTable> tables;
 	private Reservation reservation;
 	private TimeIntervals timeIntervals;
+	private ResponseToTimeIntervalsRequest timeIntervalsResponse;
 
 	public ReservationsManagementLogic() {
 	}
@@ -46,6 +49,19 @@ public class ReservationsManagementLogic {
 	public ResponseToReservationRequest startReservation(ReservationForm reservationForm) {
 		createStartupVariables(reservationForm);
 		return tryToMakeAReservation();
+	}
+	
+	public TimeIntervals findTimeIntervalsIfTheTimeIsNotFree(TimeIntervalsForm timeIntervalsForm) {
+		createStartupVariables(timeIntervalsForm);
+		// TODO
+		return null;
+	}
+
+	private void createStartupVariables(TimeIntervalsForm timeIntervalsForm) {
+		// TODO Auto-generated method stub
+		timeIntervalsResponse = new ResponseToTimeIntervalsRequest();
+		this.restaurantTable = tableService.getByTableNumber(reservationForm.getTableNumber());
+		this.reservations = restaurantTable.getReservationsFromDate(reservationForm.getDate());
 	}
 
 	private ResponseToReservationRequest tryToMakeAReservation() {

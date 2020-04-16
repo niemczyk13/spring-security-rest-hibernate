@@ -217,7 +217,7 @@ public class ComparisonOfReservationsHoursTest {
 	
 	private boolean checkBetweenWorkingHours(LocalDate date, LocalTime startHour, LocalTime endHour,
 			LocalTime openHour, LocalTime closeHour) {
-		return comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour, openHour, closeHour);
+		return comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour);
 	}
 	
 	private ReservationForm createReservationFormWithStartAndEndHoursAndDate(String startHour, String endHour, String date) {

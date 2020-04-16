@@ -12,7 +12,7 @@ import org.mockito.Mock;
 
 import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
-import niemiec.response.ResponseToReservationRequest;
+import niemiec.response.reservationRequest.ResponseToReservationRequest;
 import niemiec.service.reservation.ReservationService;
 import niemiec.service.restaurantTable.RestaurantTableService;
 

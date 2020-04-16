@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import niemiec.controller.validation.reservation.ReservationValidator;
 import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.ReservationsManagementLogic;
-import niemiec.response.ResponseToReservationRequest;
+import niemiec.response.reservationRequest.ResponseToReservationRequest;
 
 @CrossOrigin
 @RestController
@@ -41,6 +41,7 @@ public class ClientController {
 
 	@PostMapping("/reservations")
 	public ResponseEntity<?> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
+		//jeżeli nr stolika i data i godzina dobra to dokonać próby rezerwacji
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
 		}

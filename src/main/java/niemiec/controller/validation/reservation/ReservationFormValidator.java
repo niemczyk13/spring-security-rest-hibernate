@@ -115,8 +115,7 @@ public class ReservationFormValidator {
 	}
 
 	private void checkIfTheGivenHoursAreInWorkingHours() {
-		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour, openHour,
-				closeHour)) {
+		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour)) {
 			String message = "The restaurant is open from " + openHour + " to " + closeHour;
 			errors.rejectValue("startHour", message, message);
 		}

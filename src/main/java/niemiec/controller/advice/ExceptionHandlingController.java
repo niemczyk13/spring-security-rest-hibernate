@@ -15,10 +15,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import niemiec.controller.EmployeeRestaurantTableController;
 import niemiec.controller.ClientController;
+import niemiec.controller.EmployeeReservationController;
 import niemiec.response.ExceptionResponse;
 
 @RestController
-@ControllerAdvice(assignableTypes = { EmployeeRestaurantTableController.class, ClientController.class })
+@ControllerAdvice(assignableTypes = { EmployeeRestaurantTableController.class, 
+		ClientController.class, EmployeeReservationController.class })
 public class ExceptionHandlingController extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(EntityNotFoundException.class)
