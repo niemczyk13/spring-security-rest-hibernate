@@ -24,8 +24,8 @@ public class ReservationFormValidator {
 	private LocalDate date;
 	private LocalTime startHour;
 	private LocalTime endHour;
-	private LocalTime openHour = RestaurantInformations.OPEN_HOUR;
-	private LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
+	private final LocalTime openHour = RestaurantInformations.OPEN_HOUR;
+	private final LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
 	private int tableNumber;
 	private int numberOfPeople;
 	private Errors errors;
@@ -60,7 +60,8 @@ public class ReservationFormValidator {
 	private void checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture() {
 		if (!comparison.checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture(date, startHour, endHour)) {
 			String message = "The entry time cannot be later than the exit time.";
-			errors.reject(message);
+			String errorCode = "reservation.starHour";
+			errors.rejectValue("startHour", errorCode, message);
 		}
 	}
 

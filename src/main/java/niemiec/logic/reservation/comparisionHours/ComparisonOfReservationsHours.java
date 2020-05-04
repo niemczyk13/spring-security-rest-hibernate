@@ -9,12 +9,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.ReservationDateTime;
 import niemiec.logic.reservation.comparisionHours.freeTime.FreeTimesInTable;
 import niemiec.model.Reservation;
 import niemiec.response.TimeIntervals;
-import niemiec.restaurant.RestaurantInformations;
 
 @Component
 public class ComparisonOfReservationsHours {
@@ -85,9 +83,9 @@ public class ComparisonOfReservationsHours {
 		return hourLaterFirstLimit && hourBeforeSecondLimit;
 	}
 
-	public boolean checkIfItIsFreeTime(List<Reservation> reservations, ReservationForm reservationForm) {
-		ReservationDateTime formHours = new ReservationDateTime(reservationForm.getDate(), 
-				reservationForm.getStartHour(), reservationForm.getEndHour());
+	public boolean checkIfItIsFreeTime(List<Reservation> reservations, LocalDate date,
+			LocalTime startHour, LocalTime endHour) {
+		ReservationDateTime formHours = new ReservationDateTime(date, startHour, endHour);
 		
 		ReservationDateTime reservationHours;
 

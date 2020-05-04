@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import niemiec.controller.validation.reservation.ReservationValidator;
 import niemiec.form.ReservationForm;
+import niemiec.form.TimeIntervalsForm;
 import niemiec.logic.reservation.ReservationsManagementLogic;
 import niemiec.response.reservationRequest.ResponseToReservationRequest;
+import niemiec.response.reservationRequest.ResponseToTimeIntervalsRequest;
 
 @CrossOrigin
 @RestController
@@ -41,11 +43,16 @@ public class ClientController {
 
 	@PostMapping("/reservations")
 	public ResponseEntity<?> reservation(@Valid ReservationForm reservationForm, BindingResult bindingResult) {
-		//jeżeli nr stolika i data i godzina dobra to dokonać próby rezerwacji
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
 		}
 		ResponseToReservationRequest response = reservationManagementLogic.startReservation(reservationForm);
+		return new ResponseEntity<>(response, response.getHttpStatus());
+	}
+
+	@PostMapping("/resevations/freehours")
+	public ResponseEntity<?> freeHours(TimeIntervalsForm timeIntervalsForm) {
+		ResponseToTimeIntervalsRequest response = reservationManagementLogic.findTimeIntervalsIfTheTimeIsNotFree(timeIntervalsForm);
 		return new ResponseEntity<>(response, response.getHttpStatus());
 	}
 }

@@ -3,6 +3,7 @@ package niemiec.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -79,8 +80,8 @@ public class RestaurantTable {
 
 	public List<Reservation> getReservationsFromDate(LocalDate date) {
 		List<Reservation> list = reservations.stream().filter(r -> r.getDate().equals(date)).collect(Collectors.toList());
-		if (reservations == null) return new ArrayList<>();
-		return list;
+		if (Optional.ofNullable(reservations).isPresent()) return list;
+		return new ArrayList<>();
 	}
 
 	public void deleteReservationsToDate(LocalDate date) {

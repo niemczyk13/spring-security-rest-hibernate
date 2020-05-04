@@ -1,11 +1,13 @@
 package niemiec.logic.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import niemiec.form.ReservationForm;
@@ -27,13 +29,16 @@ public class ReservationsManagementLogic {
 	private ComparisonOfReservationsHours comparison;
 
 	private ReservationForm reservationForm;
+	private LocalDate date;
+	private LocalTime startHour;
+	private LocalTime endHour;
+	private int numberOfPeople;
 	private ResponseToReservationRequest response;
 	private RestaurantTable restaurantTable;
 	private List<Reservation> reservations;
 	private List<RestaurantTable> tables;
 	private Reservation reservation;
 	private TimeIntervals timeIntervals;
-	private ResponseToTimeIntervalsRequest timeIntervalsResponse;
 
 	public ReservationsManagementLogic() {
 	}
@@ -51,17 +56,29 @@ public class ReservationsManagementLogic {
 		return tryToMakeAReservation();
 	}
 	
-	public TimeIntervals findTimeIntervalsIfTheTimeIsNotFree(TimeIntervalsForm timeIntervalsForm) {
+	public ResponseToTimeIntervalsRequest findTimeIntervalsIfTheTimeIsNotFree(TimeIntervalsForm timeIntervalsForm) {
 		createStartupVariables(timeIntervalsForm);
 		// TODO
-		return null;
+		if (restaurantTable == null) {
+			System.out.println(restaurantTable);
+			return new ResponseToTimeIntervalsRequest(HttpStatus.BAD_REQUEST);
+		}
+		if (reservationTimeIsFree()) {
+			return new ResponseToTimeIntervalsRequest(HttpStatus.OK);
+		}
+		findTimeIntervals();
+		return new ResponseToTimeIntervalsRequest(timeIntervals, HttpStatus.LOCKED);
 	}
 
 	private void createStartupVariables(TimeIntervalsForm timeIntervalsForm) {
 		// TODO Auto-generated method stub
-		timeIntervalsResponse = new ResponseToTimeIntervalsRequest();
-		this.restaurantTable = tableService.getByTableNumber(reservationForm.getTableNumber());
-		this.reservations = restaurantTable.getReservationsFromDate(reservationForm.getDate());
+//		timeIntervalsResponse = new ResponseToTimeIntervalsRequest();
+		this.date = timeIntervalsForm.getDate();
+		this.startHour = timeIntervalsForm.getStartHour();
+		this.endHour = timeIntervalsForm.getEndHour();
+		this.restaurantTable = tableService.getByTableNumber(timeIntervalsForm.getTableNumber());
+		if (restaurantTable != null)
+		this.reservations = restaurantTable.getReservationsFromDate(date);
 	}
 
 	private ResponseToReservationRequest tryToMakeAReservation() {
@@ -87,12 +104,12 @@ public class ReservationsManagementLogic {
 	}
 
 	private void findTimeIntervals() {
-		timeIntervals = findFreeHoursInTable(restaurantTable, reservationForm.getDate());
+		timeIntervals = findFreeHoursInTable(restaurantTable, date);
 	}
 
 	private void findFreeTables() {
-		tables = tableService.getByNumberOfSeatsGreaterThanEqual(reservationForm.getNumberOfPeople());
-		tables = findTablesWithFreeTime(tables, reservationForm);
+		tables = tableService.getByNumberOfSeatsGreaterThanEqual(numberOfPeople);
+		tables = findTablesWithFreeTime(tables);
 	}
 
 	private ResponseToReservationRequest createOkResponse() {
@@ -114,11 +131,16 @@ public class ReservationsManagementLogic {
 	}
 
 	private boolean reservationTimeIsFree() {
-		return reservations.isEmpty() || comparison.checkIfItIsFreeTime(reservations, reservationForm);
+		return reservations.isEmpty() || comparison.checkIfItIsFreeTime(reservations, date,
+				startHour, endHour);
 	}
 
 	private void createStartupVariables(ReservationForm reservationForm) {
 		this.reservationForm = reservationForm;
+		this.date = reservationForm.getDate();
+		this.startHour = reservationForm.getStartHour();
+		this.endHour = reservationForm.getEndHour();
+		this.numberOfPeople = reservationForm.getNumberOfPeople();
 		this.response = new ResponseToReservationRequest();
 		this.restaurantTable = tableService.getByTableNumber(reservationForm.getTableNumber());
 		this.reservations = restaurantTable.getReservationsFromDate(reservationForm.getDate());
@@ -134,12 +156,12 @@ public class ReservationsManagementLogic {
 		return comparison.findFreeTimesInTable(table.getReservations(), date);
 	}
 
-	private List<RestaurantTable> findTablesWithFreeTime(List<RestaurantTable> tables,
-			ReservationForm reservationForm) {
+	private List<RestaurantTable> findTablesWithFreeTime(List<RestaurantTable> tables) {
 		List<RestaurantTable> list = new ArrayList<>();
 		for (RestaurantTable table : tables) {
-			List<Reservation> reservations = table.getReservationsFromDate(reservationForm.getDate());
-			if (comparison.checkIfItIsFreeTime(reservations, reservationForm)) {
+			List<Reservation> reservations = table.getReservationsFromDate(date);
+			if (comparison.checkIfItIsFreeTime(reservations, date,
+					startHour, endHour)) {
 				list.add(table);
 			}
 		}

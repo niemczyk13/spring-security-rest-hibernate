@@ -52,19 +52,19 @@ public class ComparisonOfReservationsHoursTest {
 	public void testCheckIfItIsFreeTime() {
 		ReservationForm reservationForm; 
 		reservationForm = createReservationFormWithStartAndEndHoursAndDate("14:00", "15:00", "2022-03-03");
-		assertEquals(false, comparison.checkIfItIsFreeTime(reservations, reservationForm));
+		assertEquals(false, comparison.checkIfItIsFreeTime(reservations, reservationForm.getDate(), reservationForm.getStartHour(), reservationForm.getEndHour()));
 		
 		reservationForm = createReservationFormWithStartAndEndHoursAndDate("15:00", "16:00", "2022-03-03");
-		assertEquals(true, comparison.checkIfItIsFreeTime(reservations, reservationForm));
+		assertEquals(true, comparison.checkIfItIsFreeTime(reservations, reservationForm.getDate(), reservationForm.getStartHour(), reservationForm.getEndHour()));
 		
 		reservationForm = createReservationFormWithStartAndEndHoursAndDate("15:00", "17:00", "2022-03-03");
-		assertEquals(true, comparison.checkIfItIsFreeTime(reservations, reservationForm));
+		assertEquals(true, comparison.checkIfItIsFreeTime(reservations, reservationForm.getDate(), reservationForm.getStartHour(), reservationForm.getEndHour()));
 		
 		reservationForm = createReservationFormWithStartAndEndHoursAndDate("19:15", "19:20", "2022-03-03");
-		assertEquals(true, comparison.checkIfItIsFreeTime(reservations, reservationForm));
+		assertEquals(true, comparison.checkIfItIsFreeTime(reservations, reservationForm.getDate(), reservationForm.getStartHour(), reservationForm.getEndHour()));
 		
 		reservationForm = createReservationFormWithStartAndEndHoursAndDate("20:30", "22:00", "2022-03-03");
-		assertEquals(false, comparison.checkIfItIsFreeTime(reservations, reservationForm));
+		assertEquals(false, comparison.checkIfItIsFreeTime(reservations, reservationForm.getDate(), reservationForm.getStartHour(), reservationForm.getEndHour()));
 		
 	}
 	

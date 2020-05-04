@@ -9,16 +9,26 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class TimeIntervalsForm {
-	@NotNull
-	@FutureOrPresent
+//	@NotNull
+	private int tableNumber;
+//	@NotNull
+//	@FutureOrPresent
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
-	@NotNull
+//	@NotNull
 	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime startHour;
-	@NotNull
+//	@NotNull
 	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime endHour;
+
+	public int getTableNumber() {
+		return tableNumber;
+	}
+
+	public void setTableNumber(int tableNumber) {
+		this.tableNumber = tableNumber;
+	}
 
 	public LocalDate getDate() {
 		return date;
