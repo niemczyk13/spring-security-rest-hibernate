@@ -4,25 +4,25 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Client {
-	private String name;
-	private String surname;
+	private String firstName;
+	private String lastName;
 	private String email;
 	private String phoneNumber;
 
 	public String getName() {
-		return name;
+		return firstName;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.firstName = name;
 	}
 
 	public String getSurname() {
-		return surname;
+		return lastName;
 	}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		this.lastName = surname;
 	}
 
 	public String getEmail() {

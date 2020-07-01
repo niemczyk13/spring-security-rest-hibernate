@@ -11,7 +11,8 @@ import org.springframework.validation.Errors;
 import niemiec.form.ReservationForm;
 import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.RestaurantTable;
-import niemiec.restaurant.RestaurantInformations;
+import niemiec.restaurant.OpeningHoursInfo;
+import niemiec.restaurant.ReservationTimeDetailsInfo;
 import niemiec.service.restaurantTable.RestaurantTableService;
 
 @Component
@@ -24,8 +25,8 @@ public class ReservationFormValidator {
 	private LocalDate date;
 	private LocalTime startHour;
 	private LocalTime endHour;
-	private final LocalTime openHour = RestaurantInformations.OPEN_HOUR;
-	private final LocalTime closeHour = RestaurantInformations.CLOSE_HOUR;
+	private final LocalTime openHour = OpeningHoursInfo.OPEN.hour();
+	private final LocalTime closeHour = OpeningHoursInfo.CLOSE.hour();
 	private int tableNumber;
 	private int numberOfPeople;
 	private Errors errors;
@@ -42,10 +43,23 @@ public class ReservationFormValidator {
 	public void validate(ReservationForm form, Errors errors) {
 		createStartupVariables(form, errors);
 		validateRestaurantTable();
-		checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture();
-		checkIfTheGivenHoursAreInWorkingHours();
-		checkIfReservationTheRightTimeBeforeClosing();
-		checkIfReservationLastsAMinimumTime();
+		if (hoursAndDateNotNull()) {
+			checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture();
+			checkIfTheGivenHoursAreInWorkingHours();
+			checkIfReservationTheRightTimeBeforeClosing();
+			checkIfReservationLastsAMinimumTime();
+		}
+	}
+
+	private boolean hoursAndDateNotNull() {
+		if (!Optional.ofNullable(date).isPresent()) {
+			return false;
+		} else if (!Optional.ofNullable(startHour).isPresent()) {
+			return false;
+		} else if (!Optional.ofNullable(endHour).isPresent()) {
+			return false;
+		}
+		return true;
 	}
 
 	private void createStartupVariables(ReservationForm form, Errors errors) {
@@ -59,7 +73,7 @@ public class ReservationFormValidator {
 
 	private void checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture() {
 		if (!comparison.checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture(date, startHour, endHour)) {
-			String message = "The entry time cannot be later than the exit time.";
+			String message = "Czas wejścia nie może być pózniej niż czas wyjścia";
 			String errorCode = "reservation.starHour";
 			errors.rejectValue("startHour", errorCode, message);
 		}
@@ -71,16 +85,18 @@ public class ReservationFormValidator {
 		if (restaurantTableExist(restaurantTable)) {
 			checkIfTheTableHasEnoughSeats(restaurantTable);
 		} else {
-			String message = "Table does not exist";
-			errors.rejectValue("tableNumber", message, message);
+			String message = "Stolik o podanym numerze nie istnieje";
+			String errorCode = "reservation.table";
+			errors.rejectValue("tableNumber", errorCode, message);
 		}
 	}
 
 	private void checkIfTheTableHasEnoughSeats(RestaurantTable restaurantTable) {
 		if (restaurantTable.getNumberOfSeats() < numberOfPeople) {
-			String message = "The maximum number of places for table number " + restaurantTable.getTableNumber()
-					+ " is " + restaurantTable.getNumberOfSeats();
-			errors.rejectValue("numberOfPeople", message, message);
+			String message = "Maksymalna ilość ludzi w stoliku nr " + restaurantTable.getTableNumber()
+					+ " wynosi " + restaurantTable.getNumberOfSeats();
+			String errorCode = "reservation.numberOfPeople";
+			errors.rejectValue("numberOfPeople", errorCode, message);
 		}
 	}
 
@@ -93,32 +109,35 @@ public class ReservationFormValidator {
 	}
 
 	private void checkIfReservationLastsAMinimumTime() {
-		long minimumReservationTime = RestaurantInformations.MINIMUM_RESERVATION_TIME;
+		long minimumReservationTime = ReservationTimeDetailsInfo.MINIMUM_RESERVATION_TIME.time();
 
 		if (!comparison.checkIfReservationLastsAMinimumTime(date, startHour, endHour,
 				minimumReservationTime)) {
 			minimumReservationTime = minimumReservationTime / SECONDS_IN_MINUTE;
-			String message = "The minimum rezervation time is " + minimumReservationTime;
-			errors.rejectValue("startHour", message, message);
+			String message = "Minimalny czas rezerwacji wynosi " + minimumReservationTime;
+			String errorCode = "reservation.startHour";
+			errors.rejectValue("startHour", errorCode, message);
 		}
 
 	}
 
 	private void checkIfReservationTheRightTimeBeforeClosing() {
-		long timeBeforeClosing = RestaurantInformations.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING;
+		long timeBeforeClosing = ReservationTimeDetailsInfo.MINIMUM_RESERVATION_TIME_BEFORE_CLOSING.time();
 
 		if (!comparison.checkIfReservationTheRightTimeBeforeClosing(date, startHour, closeHour,
 				timeBeforeClosing)) {
 			timeBeforeClosing = timeBeforeClosing / SECONDS_IN_MINUTE;
-			String message = "The reservation minimum " + timeBeforeClosing + " minutes before closing restauration";
-			errors.rejectValue("startHour", message, message);
+			String message = "Rezerwacja może zostać dokonana minimum " + timeBeforeClosing + " minut przed zamknięciem restauracji";
+			String errorCode = "reservation.startHour";
+			errors.rejectValue("startHour", errorCode, message);
 		}
 	}
 
 	private void checkIfTheGivenHoursAreInWorkingHours() {
 		if (!comparison.checkIfTheGivenHoursAreInWorkingHours(date, startHour, endHour)) {
-			String message = "The restaurant is open from " + openHour + " to " + closeHour;
-			errors.rejectValue("startHour", message, message);
+			String message = "Rezerwacja jest otwarta od " + openHour + " do " + closeHour;
+			String errorCode = "reservation.startHour";
+			errors.rejectValue("startHour", errorCode, message);
 		}
 	}
 

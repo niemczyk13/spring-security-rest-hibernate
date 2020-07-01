@@ -12,7 +12,7 @@ import niemiec.form.TimeIntervalsForm;
 public class ReservationValidator implements Validator {
 
 	private final ReservationFormValidator reservationFormValidator;
-
+	
 	@Autowired
 	public ReservationValidator(ReservationFormValidator reservationFormValidator) {
 		this.reservationFormValidator = reservationFormValidator;

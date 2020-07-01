@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import niemiec.restaurant.RestaurantInformations;
+import niemiec.restaurant.OpeningHoursInfo;
 
 public class ReservationDateTime {
 	public static final int START_HOUR = 0;
@@ -15,19 +15,19 @@ public class ReservationDateTime {
 	private static final long ONE_DAY = 1;
 	
 	private LocalDateTime[] reservationHours;
-	private LocalDateTime[] restaurantWoringTime;
+	private LocalDateTime[] restaurantWorkingTime;
 	
 	public ReservationDateTime(LocalDate date, LocalTime startHour, LocalTime endHour) {
 		reservationHours = createTwoElementsTable(date, startHour, endHour);
 		
-		restaurantWoringTime = createTwoElementsTable(date, RestaurantInformations.OPEN_HOUR, 
-				RestaurantInformations.CLOSE_HOUR);
+		restaurantWorkingTime = createTwoElementsTable(date, OpeningHoursInfo.OPEN.hour(), 
+				OpeningHoursInfo.CLOSE.hour());
 	}
 	
 	public ReservationDateTime(LocalDate date, LocalTime startHour) {
 		reservationHours = createOneElementsTable(date, startHour);
-		restaurantWoringTime = createTwoElementsTable(date, RestaurantInformations.OPEN_HOUR, 
-				RestaurantInformations.CLOSE_HOUR);
+		restaurantWorkingTime = createTwoElementsTable(date, OpeningHoursInfo.OPEN.hour(), 
+				OpeningHoursInfo.CLOSE.hour());
 	}
 
 	private LocalDateTime[] createOneElementsTable(LocalDate date, LocalTime startHour) {
@@ -44,10 +44,10 @@ public class ReservationDateTime {
 	}
 	
 	private LocalDateTime createLocalDateTime(LocalDate date, LocalTime hour) {
-		LocalTime openHour = RestaurantInformations.OPEN_HOUR;
-		LocalTime closeHout = RestaurantInformations.CLOSE_HOUR;
-		if ((hour.compareTo(openHour) == SMALLER && hour.compareTo(closeHout) == SMALLER) || 
-				(hour.compareTo(openHour) == SMALLER && hour.equals(closeHout))) {
+		LocalTime openHour = OpeningHoursInfo.OPEN.hour();
+		LocalTime closeHour = OpeningHoursInfo.CLOSE.hour();
+		if ((hour.compareTo(openHour) == SMALLER && hour.compareTo(closeHour) == SMALLER) || 
+				(hour.compareTo(openHour) == SMALLER && hour.equals(closeHour))) {
 			date = date.plusDays(ONE_DAY);
 		}
 	
@@ -75,10 +75,10 @@ public class ReservationDateTime {
 	}
 	
 	public LocalDateTime getOpenHourAndDate() {
-		return restaurantWoringTime[START_HOUR];
+		return restaurantWorkingTime[START_HOUR];
 	}
 	
 	public LocalDateTime getCloseHourAndDate() {
-		return restaurantWoringTime[END_HOUR];
+		return restaurantWorkingTime[END_HOUR];
 	}
 }

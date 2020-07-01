@@ -14,7 +14,8 @@ import niemiec.logic.reservation.comparisionHours.ComparisonOfReservationsHours;
 import niemiec.model.Reservation;
 import niemiec.response.TimeInterval;
 import niemiec.response.TimeIntervals;
-import niemiec.restaurant.RestaurantInformations;
+import niemiec.restaurant.OpeningHoursInfo;
+import niemiec.restaurant.ReservationTimeDetailsInfo;
 
 @Component
 public class FreeTimesInTable {
@@ -28,8 +29,8 @@ public class FreeTimesInTable {
 	private LocalDateTime nextFreeHour;
 	private LocalDateTime closeHour;
 	private TimeIntervals timeIntervals;
-	private LocalTime openRestuarantHour = RestaurantInformations.OPEN_HOUR;
-	private LocalTime closeRestaurantHour = RestaurantInformations.CLOSE_HOUR;
+	private LocalTime openRestuarantHour = OpeningHoursInfo.OPEN.hour();
+	private LocalTime closeRestaurantHour = OpeningHoursInfo.CLOSE.hour();
 
 	public TimeIntervals find(List<Reservation> reservations, LocalDate date) {
 		createStartupVariables(reservations, date);
@@ -38,8 +39,8 @@ public class FreeTimesInTable {
 	}
 
 	private void createStartupVariables(List<Reservation> reservations, LocalDate date) {
-		this.nextFreeHour = createLocalDateTime(date, RestaurantInformations.OPEN_HOUR);
-		this.closeHour = createLocalDateTime(date, RestaurantInformations.CLOSE_HOUR);
+		this.nextFreeHour = createLocalDateTime(date, openRestuarantHour);
+		this.closeHour = createLocalDateTime(date, closeRestaurantHour);
 		this.timeIntervals = new TimeIntervals();
 		this.reservations = sortedReservationsByStartHour(reservations);
 	}
@@ -67,7 +68,7 @@ public class FreeTimesInTable {
 
 		LocalTime nextFreeHour = this.nextFreeHour.toLocalTime();
 		LocalTime start = startHour.toLocalTime();
-		long minimumResrvationTime = RestaurantInformations.MINIMUM_RESERVATION_TIME;
+		long minimumResrvationTime = ReservationTimeDetailsInfo.MINIMUM_RESERVATION_TIME.time();
 		boolean reservationTakesAMinimumTime = comparison.checkIfReservationLastsAMinimumTime(date, nextFreeHour, start,
 				minimumResrvationTime);
 
