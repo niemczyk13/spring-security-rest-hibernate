@@ -19,8 +19,8 @@ import niemiec.restaurant.ReservationTimeDetailsInfo;
 
 @Component
 public class FreeTimesInTable {
-	private final int SMALLER = -1;
-	private final long ONE_DAY = 1;
+	private static final int SMALLER = -1;
+	private static final long ONE_DAY = 1;
 
 	@Autowired
 	private ComparisonOfReservationsHours comparison;

@@ -24,7 +24,7 @@ public class ComparisonOfReservationsHours {
 	private static final boolean COLLISION = true;
 	
 	@Autowired
-	private FreeTimesInTable findFreeTimesInTable;
+	private FreeTimesInTable freeTimesInTable;
 
 	public boolean checkIfReservationLastsAMinimumTime(LocalDate date, LocalTime startHour, LocalTime endHour,
 			long minimumReservationTime) {
@@ -40,11 +40,11 @@ public class ComparisonOfReservationsHours {
 				reservationDateTime.getCloseHourAndDate(), minReservationTimeBeforeClosing);
 	}
 
-	private boolean betweenTheHoursIsEqualsOrGreaterTimeDifference(LocalDateTime firstHour, LocalDateTime seconHour, long minimumTime) {
+	private boolean betweenTheHoursIsEqualsOrGreaterTimeDifference(LocalDateTime firstHour, LocalDateTime secondHour, long minimumTime) {
 		Duration difference;
 		Duration minTime = Duration.ofSeconds(minimumTime);
 	
-		difference = Duration.between(firstHour, seconHour);
+		difference = Duration.between(firstHour, secondHour);
 	
 		return timeIsEqualsOrSmaller(minTime, difference);
 	}
@@ -119,7 +119,7 @@ public class ComparisonOfReservationsHours {
 	}
 
 	public TimeIntervals findFreeTimesInTable(List<Reservation> reservations, LocalDate date) {
-		return findFreeTimesInTable.find(reservations, date);
+		return freeTimesInTable.find(reservations, date);
 	}
 
 	public boolean checkIfTheTimeOfEntryIsBeforeTheTimeOfDeparture(LocalDate date, LocalTime startHour,
